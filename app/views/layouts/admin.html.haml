@@ -1,0 +1,13 @@
+!!!
+%html
+  %head
+    %title Admin
+    %meta{name: "viewport", content: "width=device-width,initial-scale=1"}
+    = csrf_meta_tags
+    = csp_meta_tag
+  %body
+    %header
+      %nav
+        = link_to "Dashboard", admin_root_path
+        = button_to "Sign out", destroy_admin_session_path, method: :delete
+    %main= yield
