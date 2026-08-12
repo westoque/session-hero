@@ -1,9 +1,13 @@
 Rails.application.routes.draw do
   get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["OK"]] }
-  namespace :admin do
-    root "dashboard#index"
-  end
   devise_for :admins
+  # Admin area lives under /admins (matching the Devise scope). The dashboard is
+  # canonically at /admins/dashboard; the namespace root redirects there. Admins
+  # land here after signing in via ApplicationController#after_sign_in_path_for.
+  namespace :admins do
+    get "dashboard", to: "dashboard#index", as: :dashboard
+    root to: redirect("/admins/dashboard")
+  end
   root to: 'welcome#index'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

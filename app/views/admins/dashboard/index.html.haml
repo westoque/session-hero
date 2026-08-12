@@ -1,0 +1,41 @@
+.flex.flex-col.gap-8
+  / Page header
+  .flex.flex-col.gap-1
+    %h1.text-3xl.font-bold Dashboard
+    %p.opacity-70 Use this protected area for application administration.
+
+  / Stats
+  .stats.shadow.bg-base-100.border.border-base-300.w-full{ class: "stats-vertical md:stats-horizontal" }
+    .stat
+      .stat-title Admins
+      .stat-value.text-primary= Admin.count
+      .stat-desc Registered admin accounts
+    .stat
+      .stat-title Signed in as
+      .stat-value.text-lg.truncate= current_admin.email
+      .stat-desc You're authenticated
+    .stat
+      .stat-title Environment
+      .stat-value.text-lg.uppercase= Rails.env
+      .stat-desc Rails #{Rails.version}
+
+  / Quick actions
+  .grid.grid-cols-1.gap-6{ class: "md:grid-cols-3" }
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        %h2.card-title Account
+        %p.text-sm.opacity-70 Update your admin email and password.
+        .card-actions.mt-2
+          = link_to "Manage account", edit_admin_registration_path, class: "btn btn-primary btn-sm"
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        %h2.card-title Public site
+        %p.text-sm.opacity-70 View the front-facing application.
+        .card-actions.mt-2
+          = link_to "Visit site", root_path, class: "btn btn-outline btn-sm"
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        %h2.card-title Session
+        %p.text-sm.opacity-70 Sign out of the admin area.
+        .card-actions.mt-2
+          = button_to "Sign out", destroy_admin_session_path, method: :delete, class: "btn btn-error btn-outline btn-sm"

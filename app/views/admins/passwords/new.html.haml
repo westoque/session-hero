@@ -1,0 +1,11 @@
+.w-full.flex.justify-center
+  .card.w-full.max-w-md.bg-base-100.shadow-xl.border.border-base-300
+    .card-body
+      %h1.text-2xl.font-bold.text-center.mb-1 Forgot your password?
+      %p.text-center.text-sm.opacity-70.mb-4 Enter your email and we'll send reset instructions.
+      = simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
+        = f.error_notification
+        = f.input :email, required: true, autofocus: true, placeholder: "you@example.com", input_html: { autocomplete: "email" }
+        .mt-6
+          = f.button :submit, "Send reset instructions", class: "btn btn-primary w-full"
+      = render "admins/shared/links"
