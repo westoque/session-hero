@@ -1,1 +1,53 @@
-%h1 Hello World from Thomas
+.w-full.flex.flex-col.gap-8
+  / Hero
+  .hero.bg-base-200.rounded-box.py-12
+    .hero-content.text-center
+      .max-w-md
+        %h1.text-4xl.font-bold Hello World from Thomas
+        %p.py-4 This page is styled with daisyUI on top of Tailwind CSS.
+        %button.btn.btn-primary Get Started
+
+  / Theme switcher
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      %h2.card-title Theme
+      %p.text-sm.opacity-70 Pick a daisyUI theme — it applies instantly to this page.
+      .flex.flex-wrap.gap-2.mt-2
+        - %w[facebook dark cupcake synthwave retro cyberpunk valentine dracula].each do |theme|
+          %button.btn.btn-sm.btn-outline{ data: { set_theme: theme }, onclick: "document.documentElement.setAttribute('data-theme','#{theme}')" }= theme.capitalize
+
+  / Buttons
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      %h2.card-title Buttons
+      .flex.flex-wrap.gap-2
+        %button.btn Default
+        %button.btn.btn-primary Primary
+        %button.btn.btn-secondary Secondary
+        %button.btn.btn-accent Accent
+        %button.btn.btn-info Info
+        %button.btn.btn-success Success
+        %button.btn.btn-warning Warning
+        %button.btn.btn-error Error
+
+  / Badges + progress
+  .grid.grid-cols-1.gap-6{ class: "md:grid-cols-2" }
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        %h2.card-title Badges
+        .flex.flex-wrap.gap-2
+          %span.badge.badge-primary Primary
+          %span.badge.badge-secondary Secondary
+          %span.badge.badge-accent Accent
+          %span.badge.badge-outline Outline
+          %span.badge.badge-ghost Ghost
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        %h2.card-title Progress
+        %progress.progress.progress-primary{ value: 70, max: 100 }
+        %progress.progress.progress-secondary{ value: 40, max: 100 }
+        %progress.progress.progress-accent{ value: 90, max: 100 }
+
+  / Alert
+  .alert.alert-info
+    %span daisyUI is installed and ready to use across the app.

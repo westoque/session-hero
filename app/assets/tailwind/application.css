@@ -1,1 +1,62 @@
 @import "tailwindcss";
+
+@plugin "../../../vendor/javascript/daisyui.js" {
+  themes: dark --prefersdark, cupcake, synthwave, retro, cyberpunk, valentine, dracula;
+}
+
+/* Custom default theme: Facebook blue, a touch darker. */
+@plugin "../../../vendor/javascript/daisyui-theme.js" {
+  name: "facebook";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #ffffff;
+  --color-base-200: #f0f2f5;
+  --color-base-300: #e4e6eb;
+  --color-base-content: #1c1e21;
+
+  --color-primary: #1560c7;
+  --color-primary-content: #ffffff;
+  --color-secondary: #42506b;
+  --color-secondary-content: #ffffff;
+  --color-accent: #1877f2;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1c1e21;
+  --color-neutral-content: #ffffff;
+
+  --color-info: #0a7cff;
+  --color-info-content: #ffffff;
+  --color-success: #16a34a;
+  --color-success-content: #ffffff;
+  --color-warning: #f59e0b;
+  --color-warning-content: #1c1e21;
+  --color-error: #dc2626;
+  --color-error-content: #ffffff;
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  html {
+    letter-spacing: -0.011em;
+  }
+
+  /* Rounder buttons across every daisyUI theme.
+     .btn reads var(--radius-field); redefining it on the element itself
+     overrides the inherited per-theme value without touching inputs/selects. */
+  .btn {
+    --radius-field: 0.75rem;
+  }
+}
