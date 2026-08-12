@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users
   get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["OK"]] }
   devise_for :admins
   # Admin area lives under /admins (matching the Devise scope). The dashboard is
@@ -8,6 +9,26 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#index", as: :dashboard
     root to: redirect("/admins/dashboard")
   end
+  # ── Customer area (organizers + speakers share one User login) ──────────────
+  # One unified dashboard; role resolves per-event, never at login.
+  get "dashboard", to: "dashboard#index"
+  resource :profile, only: %i[show edit update]   # /profile — reusable speaker profile
+
+  resources :events do
+    # Speaker front-of-house: the controller scopes these to current_user.
+    resources :submissions, only: %i[index show edit update]
+
+    # Public Call for Papers — shareable, no login required to open the form.
+    get  "submit", to: "public_submissions#new",    as: :submit
+    post "submit", to: "public_submissions#create"
+
+    # Organizer backstage → /events/:event_id/manage/...
+    namespace :manage do
+      root "dashboard#index"
+      resources :submissions, only: %i[index show update]
+    end
+  end
+
   root to: 'welcome#index'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

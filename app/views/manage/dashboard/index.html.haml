@@ -1,0 +1,53 @@
+.w-full.max-w-4xl.mx-auto.flex.flex-col.gap-6
+  .flex.items-center.justify-between
+    .flex.flex-col.gap-1
+      %h1.text-3xl.font-bold= @event.name
+      %span.badge.badge-primary.badge-sm Organizer console
+    .flex.gap-2
+      = link_to "Edit event", edit_event_path(@event), class: "btn btn-ghost btn-sm"
+      = link_to "Public page", event_path(@event), class: "btn btn-ghost btn-sm"
+
+  / Shareable CFP link
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      %h2.card-title Call for Papers link
+      %p.text-sm.opacity-70 Share this public link to collect speaker submissions.
+      .join.w-full.mt-2
+        %input.input.join-item.w-full{ type: "text", readonly: true, value: event_submit_url(@event), onclick: "this.select()" }
+        = link_to "Open", event_submit_path(@event), class: "btn btn-primary join-item"
+
+  / Stats
+  .stats.shadow.bg-base-100.border.border-base-300.w-full{ class: "stats-vertical sm:stats-horizontal" }
+    .stat
+      .stat-title Submissions
+      .stat-value.text-primary= @submissions.size
+    .stat
+      .stat-title Speakers
+      .stat-value= @event.speakers.count
+    .stat
+      .stat-title Accepted
+      .stat-value.text-success= @submissions.count { |s| s.accepted? }
+
+  / Recent submissions
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      .flex.items-center.justify-between
+        %h2.card-title Recent submissions
+        = link_to "Review all", event_manage_submissions_path(@event), class: "btn btn-secondary btn-sm"
+      - if @submissions.any?
+        .overflow-x-auto.mt-2
+          %table.table
+            %thead
+              %tr
+                %th Title
+                %th Speaker
+                %th Status
+            %tbody
+              - @submissions.first(8).each do |s|
+                %tr
+                  %td= s.title
+                  %td= s.user.email
+                  %td
+                    %span.badge.badge-sm.badge-ghost= s.status.humanize
+      - else
+        %p.opacity-70.mt-2 No submissions yet. Share the CFP link above to get started.

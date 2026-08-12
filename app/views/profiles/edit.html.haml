@@ -1,0 +1,15 @@
+.w-full.max-w-2xl.mx-auto.flex.flex-col.gap-4
+  %h1.text-2xl.font-bold Edit speaker profile
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      = simple_form_for @profile, url: profile_path, method: :patch do |f|
+        = f.error_notification
+        = f.input :name, label: "Name"
+        = f.input :headline, label: "Headline", placeholder: "Staff Engineer · speaker · author"
+        .grid.grid-cols-1.gap-4{ class: "sm:grid-cols-2" }
+          = f.input :job_title, label: "Job title"
+          = f.input :company, label: "Company"
+        = f.input :bio, label: "Bio", input_html: { rows: 5 }
+        .mt-4.flex.gap-2
+          = f.button :submit, "Save profile", class: "btn btn-primary"
+          = link_to "Cancel", profile_path, class: "btn btn-ghost"

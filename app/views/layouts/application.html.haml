@@ -18,8 +18,10 @@
     %link{:href => "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap", :rel => "stylesheet"}/
     = stylesheet_link_tag :app, "data-turbo-track": "reload"
     = javascript_importmap_tags
-  %body
+  -# pt-16 offsets the fixed navbar so body content (flash included) clears it.
+  %body.pt-16
+    = render 'shared/navbar'
     = render 'shared/flash'
     = render "immosquare-cookies/consent_banner"
-    %main.container.mx-auto.mt-28.px-5.flex
+    %main.container.mx-auto.mt-12.px-5.flex
       = yield

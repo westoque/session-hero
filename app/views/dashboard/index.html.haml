@@ -1,0 +1,49 @@
+.w-full.flex.flex-col.gap-10
+  .flex.items-center.justify-between
+    .flex.flex-col.gap-1
+      %h1.text-3xl.font-bold Dashboard
+      %p.opacity-70= "Signed in as #{current_user.email}"
+    = link_to "＋ New event", new_event_path, class: "btn btn-primary"
+
+  / ── Managing ────────────────────────────────────────────────
+  %section.flex.flex-col.gap-3
+    .flex.items-center.gap-2
+      %h2.text-xl.font-semibold Managing
+      %span.badge.badge-primary.badge-sm= @organizing.size
+    - if @organizing.any?
+      .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2 lg:grid-cols-3" }
+        - @organizing.each do |event|
+          .card.bg-base-100.shadow-md.border.border-base-300
+            .card-body
+              %h3.card-title.text-lg= event.name
+              %p.text-sm.opacity-70= "#{event.submissions.count} submission".pluralize(event.submissions.count)
+              .card-actions.mt-2
+                = link_to "Manage", event_manage_root_path(event), class: "btn btn-primary btn-sm"
+                = link_to "View", event_path(event), class: "btn btn-ghost btn-sm"
+    - else
+      .card.bg-base-200.border.border-dashed.border-base-300
+        .card-body.items-center.text-center
+          %p.opacity-70 You're not organizing any events yet.
+          = link_to "Create your first event", new_event_path, class: "btn btn-primary btn-sm mt-1"
+
+  / ── Speaking ────────────────────────────────────────────────
+  %section.flex.flex-col.gap-3
+    .flex.items-center.gap-2
+      %h2.text-xl.font-semibold Speaking
+      %span.badge.badge-secondary.badge-sm= @speaking.size
+    - if @speaking.any?
+      .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2 lg:grid-cols-3" }
+        - @speaking.each do |event|
+          - mine = current_user.submissions.where(event: event)
+          .card.bg-base-100.shadow-md.border.border-base-300
+            .card-body
+              %h3.card-title.text-lg= event.name
+              %p.text-sm.opacity-70= "#{mine.count} of your submissions".sub(/^1 of/, "1")
+              .card-actions.mt-2
+                = link_to "Your submissions", event_submissions_path(event), class: "btn btn-secondary btn-sm"
+                = link_to "View", event_path(event), class: "btn btn-ghost btn-sm"
+    - else
+      .card.bg-base-200.border.border-dashed.border-base-300
+        .card-body.items-center.text-center
+          %p.opacity-70 You haven't submitted to any events yet.
+          %p.text-sm.opacity-60 Open an event's public CFP link to submit a talk.

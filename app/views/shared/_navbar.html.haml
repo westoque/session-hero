@@ -1,0 +1,13 @@
+%header.navbar.bg-base-100.shadow-sm.border-b.border-base-300.fixed.top-0.left-0.right-0.z-50
+  .container.mx-auto.px-5.flex.items-center
+    .flex-1
+      = link_to "Open Session", root_path, class: "text-xl font-bold text-primary"
+    %nav.flex.items-center.gap-1
+      - if user_signed_in?
+        = link_to "Dashboard", dashboard_path, class: "btn btn-ghost btn-sm"
+        = link_to "New event", new_event_path, class: "btn btn-ghost btn-sm"
+        = link_to "Profile", profile_path, class: "btn btn-ghost btn-sm"
+        = button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-outline btn-sm"
+      - else
+        = link_to "Log in", new_user_session_path, class: "btn btn-ghost btn-sm"
+        = link_to "Sign up", new_user_registration_path, class: "btn btn-primary btn-sm"

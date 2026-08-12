@@ -1,0 +1,21 @@
+.w-full.max-w-xl.mx-auto.flex.flex-col.gap-4
+  .flex.flex-col.gap-1
+    %h1.text-2xl.font-bold= "Submit to #{@event.name}"
+    %p.opacity-70 Propose a talk for this event's Call for Papers.
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      = simple_form_for @submission, url: event_submit_path(@event) do |f|
+        = f.error_notification
+        - if user_signed_in?
+          .alert.alert-info.mb-4
+            %span= "Submitting as #{current_user.email}"
+        - else
+          .grid.grid-cols-1.gap-4{ class: "sm:grid-cols-2" }
+            = f.input :speaker_name, label: "Your name", input_html: { value: params.dig(:submission, :speaker_name) }
+            = f.input :contact_email, label: "Email", placeholder: "you@example.com", input_html: { value: @prefill_email }
+        = f.input :title, label: "Talk title", placeholder: "Scaling LLMs in production"
+        = f.input :abstract, label: "Abstract", input_html: { rows: 5 }
+        = f.input :talk_format, label: "Format", collection: ["Talk", "Workshop", "Lightning talk", "Panel"], include_blank: "Choose…"
+        .mt-4
+          = f.button :submit, "Submit proposal", class: "btn btn-primary w-full"
+  %p.text-xs.opacity-60.text-center Anyone with this link can submit. If your email already has an account, this talk is added to it.

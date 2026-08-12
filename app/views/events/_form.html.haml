@@ -1,0 +1,13 @@
+= simple_form_for event do |f|
+  = f.error_notification
+  = f.input :name, label: "Event name", placeholder: "AI Event for 2026", autofocus: true
+  = f.input :description, label: "Description", placeholder: "What's this event about?", input_html: { rows: 4 }
+  .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2" }
+    = f.input :starts_on, label: "Starts on", as: :string, input_html: { type: "date", value: event.starts_on }
+    = f.input :ends_on, label: "Ends on", as: :string, input_html: { type: "date", value: event.ends_on }
+  .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2" }
+    = f.input :cfp_opens_at, label: "CFP opens", as: :string, input_html: { type: "datetime-local" }
+    = f.input :cfp_closes_at, label: "CFP closes", as: :string, input_html: { type: "datetime-local" }
+  .mt-6.flex.gap-2
+    = f.button :submit, (event.persisted? ? "Save changes" : "Create event"), class: "btn btn-primary"
+    = link_to "Cancel", (event.persisted? ? event_path(event) : dashboard_path), class: "btn btn-ghost"

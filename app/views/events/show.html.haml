@@ -1,0 +1,42 @@
+.w-full.max-w-3xl.mx-auto.flex.flex-col.gap-6
+  .flex.flex-col.gap-1
+    %h1.text-3xl.font-bold= @event.name
+    - if @event.starts_on
+      %p.opacity-70= @event.starts_on.strftime("%B %-d, %Y")
+  - if @event.description.present?
+    %p.opacity-80= @event.description
+
+  -# Organizer door — shown because you hold an organizer membership here.
+  - if current_user.organizer_of?(@event)
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        %h2.card-title
+          Organizer
+          %span.badge.badge-primary.badge-sm you
+        %p.text-sm.opacity-70 You manage this event.
+        .card-actions.mt-2
+          = link_to "Manage event", event_manage_root_path(@event), class: "btn btn-primary btn-sm"
+          = link_to "Public CFP link", event_submit_path(@event), class: "btn btn-outline btn-sm"
+
+  -# Speaker door — shown because you have submissions here. Both can be true.
+  - if @my_submissions.any?
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        %h2.card-title
+          Your submissions
+          %span.badge.badge-secondary.badge-sm speaker
+        .flex.flex-col.gap-2.mt-2
+          - @my_submissions.each do |s|
+            .flex.items-center.justify-between.border.border-base-300.rounded-box.p-3
+              .flex.flex-col
+                %span.font-medium= s.title
+                %span.badge.badge-sm.badge-ghost.mt-1= s.status.humanize
+              = link_to "Edit", edit_event_submission_path(@event, s), class: "btn btn-ghost btn-sm"
+        .card-actions.mt-3
+          = link_to "All your submissions", event_submissions_path(@event), class: "btn btn-secondary btn-sm"
+
+  - unless current_user.organizer_of?(@event) || @my_submissions.any?
+    .card.bg-base-200.border.border-dashed.border-base-300
+      .card-body.items-center.text-center
+        %p.opacity-70 You have no role on this event yet.
+        = link_to "Submit a talk", event_submit_path(@event), class: "btn btn-primary btn-sm mt-1"
