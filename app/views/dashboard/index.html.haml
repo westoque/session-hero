@@ -1,9 +1,7 @@
 .w-full.flex.flex-col.gap-10
-  .flex.items-center.justify-between
-    .flex.flex-col.gap-1
-      %h1.text-3xl.font-bold App Dashboard
-      %p.opacity-70= "Signed in as #{current_user.email}"
-    = link_to "＋ New event", new_event_path, class: "btn btn-primary"
+  .flex.flex-col.gap-1
+    %h1.text-3xl.font-bold App Dashboard
+    %p.opacity-70= "Signed in as #{current_user.email}"
 
   / ── Events you organize ─────────────────────────────────────
   %section.flex.flex-col.gap-3
@@ -11,7 +9,9 @@
       .flex.items-center.gap-2
         %h2.text-xl.font-semibold Events you organize
         %span.badge.badge-primary.badge-sm= @organizing.size
-      = link_to "◈ Speaker CRM", crm_root_path, class: "btn btn-outline btn-sm"
+      .flex.gap-2
+        = link_to "◈ Speaker CRM", crm_root_path, class: "btn btn-outline btn-sm"
+        = link_to "＋ New event", new_event_path, class: "btn btn-primary btn-sm"
     - if @organizing.any?
       .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2 lg:grid-cols-3" }
         - @organizing.each do |event|
@@ -50,5 +50,5 @@
     - else
       .card.bg-base-200.border.border-dashed.border-base-300
         .card-body.items-center.text-center
-          %p.opacity-70 You haven't submitted to any events yet.
-          %p.text-sm.opacity-60 Open an event's public CFP link to submit a talk.
+          %p.opacity-70 You're not speaking at any events yet.
+          %p.text-sm.opacity-60 Submit a talk through an event's call-for-papers link — or get added by an organizer — and your speaker portal will appear here.

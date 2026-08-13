@@ -5,6 +5,8 @@
 #  id                     :integer          not null, primary key
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
+#  first_name             :string
+#  last_name              :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
@@ -45,5 +47,6 @@ class User < ApplicationRecord
   def organizer_of?(event) = event_memberships.exists?(event: event, role: :organizer)
   def speaker_of?(event)   = event_memberships.exists?(event: event, role: :speaker)
 
-  def display_name = speaker_profile&.name.presence || email
+  def full_name = [first_name, last_name].filter_map(&:presence).join(" ").presence
+  def display_name = full_name || speaker_profile&.name.presence || email
 end

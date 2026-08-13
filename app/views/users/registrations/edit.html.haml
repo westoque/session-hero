@@ -1,27 +1,37 @@
 .w-full.flex.justify-center
-  .w-full.max-w-md.flex.flex-col.gap-6
-    .card.bg-base-100.shadow-xl.border.border-base-300
-      .card-body
-        %h1.text-2xl.font-bold.mb-1= "Edit #{resource_name.to_s.humanize}"
-        %p.text-sm.opacity-70.mb-4 Update your account details
-        = simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f|
-          = f.error_notification
-          = f.input :email, required: true, autofocus: true, input_html: { autocomplete: "email" }
+  .w-full.max-w-lg.flex.flex-col.gap-6
+    %div
+      %h1.text-2xl.font-bold Profile
+      %p.text-sm.opacity-70 Your account details, name, and password. Separate from your <strong>Speaker profile</strong> (the bio shown when you speak at events).
+
+    = simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "flex flex-col gap-5" }) do |f|
+      = f.error_notification
+
+      .card.bg-base-100.shadow-sm.border.border-base-300
+        .card-body.gap-3
+          %h2.card-title.text-base Your details
+          .grid.grid-cols-1.gap-4{ class: "sm:grid-cols-2" }
+            = f.input :first_name, input_html: { autocomplete: "given-name" }
+            = f.input :last_name, input_html: { autocomplete: "family-name" }
+          = f.input :email, required: true, input_html: { autocomplete: "email" }
           - if devise_mapping.confirmable? && resource.pending_reconfirmation?
             .alert.alert-warning.text-sm
               %span= "Currently waiting confirmation for: #{resource.unconfirmed_email}"
-          = f.input :password, required: false, hint: "Leave blank if you don't want to change it", input_html: { autocomplete: "new-password" }
-          = f.input :password_confirmation, required: false, input_html: { autocomplete: "new-password" }
-          = f.input :current_password, required: true, hint: "We need your current password to confirm changes", input_html: { autocomplete: "current-password" }
-          .mt-6
-            = f.button :submit, "Update", class: "btn btn-primary w-full"
+
+      .card.bg-base-100.shadow-sm.border.border-base-300
+        .card-body.gap-3
+          %h2.card-title.text-base Change password
+          %p.text-sm.opacity-60 Leave these blank to keep your current password.
+          = f.input :password, required: false, label: "New password", input_html: { autocomplete: "new-password" }
+          = f.input :password_confirmation, required: false, label: "Confirm new password", input_html: { autocomplete: "new-password" }
+          .divider.my-1
+          = f.input :current_password, required: false, label: "Current password", hint: "Only needed to change your email or password — not to update your name.", input_html: { autocomplete: "current-password" }
+
+      = f.button :submit, "Save changes", class: "btn btn-primary w-full"
 
     .card.bg-base-100.shadow-sm.border.border-error
       .card-body
-        %h2.card-title.text-error.text-lg Cancel my account
-        %p.text-sm.opacity-70 Unhappy? This will permanently delete your account.
+        %h2.card-title.text-error.text-lg Delete account
+        %p.text-sm.opacity-70 This permanently deletes your account and cannot be undone.
         .mt-2
-          = button_to "Cancel my account", registration_path(resource_name), data: { turbo_confirm: "Are you sure?" }, method: :delete, class: "btn btn-error btn-outline"
-
-    .text-center
-      = link_to "Back", :back, class: "link link-hover text-sm"
+          = button_to "Delete my account", registration_path(resource_name), data: { turbo_confirm: "Are you sure? This cannot be undone." }, method: :delete, class: "btn btn-error btn-outline btn-sm"

@@ -76,6 +76,10 @@ class Submission < ApplicationRecord
   validates :title, presence: true
   validates :abstract, presence: true, unless: :draft?
 
+  # A submitter is a speaker: make sure they have a roster (EventSpeaker) record
+  # linked to this session so their speaker portal recognizes them.
+  after_commit :ensure_event_speaker!, on: %i[create update]
+
   scope :scheduled, -> { where.not(starts_at: nil) }
 
   def answers = super || {}
@@ -122,6 +126,18 @@ class Submission < ApplicationRecord
   end
 
   def conflicts? = room_conflicts.any? || speaker_conflicts.any?
+
+  # Link this submission's submitter to an EventSpeaker roster entry (find-or-
+  # create by email). New CFP submissions already arrive linked; this backfills
+  # manual/legacy ones so the submitter's speaker portal works.
+  def ensure_event_speaker!
+    return if event_speaker_id.present? || user.nil? || user.email.blank?
+    sp = event.event_speakers.where("lower(email) = ?", user.email.downcase).first ||
+         event.event_speakers.create!(name: user.display_name, email: user.email,
+                                      status: accepted? ? "accepted" : "invited", user: user)
+    update_columns(event_speaker_id: sp.id)
+    session_participants.find_or_create_by!(event_speaker: sp) { |p| p.role = "Speaker" }
+  end
 
   # Snapshot current title/abstract into history before an edit.
   def snapshot!(editor)

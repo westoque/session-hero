@@ -1,3 +1,27 @@
+# == Schema Information
+#
+# Table name: portal_tasks
+#
+#  id            :integer          not null, primary key
+#  description   :text
+#  due_on        :date
+#  external_link :string
+#  position      :integer          default(0)
+#  required      :boolean          default(FALSE), not null
+#  task_type     :string           default("general"), not null
+#  title         :string           not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  event_id      :integer          not null
+#
+# Indexes
+#
+#  index_portal_tasks_on_event_id  (event_id)
+#
+# Foreign Keys
+#
+#  event_id  (event_id => events.id)
+#
 class PortalTask < ApplicationRecord
   belongs_to :event
   has_many :task_assignments, dependent: :destroy

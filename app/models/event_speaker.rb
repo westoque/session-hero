@@ -1,3 +1,37 @@
+# == Schema Information
+#
+# Table name: event_speakers
+#
+#  id             :integer          not null, primary key
+#  bio            :text
+#  company        :string
+#  custom         :json
+#  email          :string
+#  linkedin       :string
+#  name           :string           not null
+#  position       :integer          default(0)
+#  public_visible :boolean          default(TRUE), not null
+#  returning      :boolean          default(FALSE), not null
+#  status         :string           default("invited"), not null
+#  title          :string
+#  travel_notes   :text
+#  twitter        :string
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  event_id       :integer          not null
+#  user_id        :integer
+#
+# Indexes
+#
+#  index_event_speakers_on_event_id            (event_id)
+#  index_event_speakers_on_event_id_and_email  (event_id,email)
+#  index_event_speakers_on_user_id             (user_id)
+#
+# Foreign Keys
+#
+#  event_id  (event_id => events.id)
+#  user_id   (user_id => users.id)
+#
 class EventSpeaker < ApplicationRecord
   belongs_to :event
   belongs_to :user, optional: true

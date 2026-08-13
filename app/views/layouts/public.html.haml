@@ -26,14 +26,13 @@
           = nav_link.(event_public_agenda_path(@event), "Agenda")
           = nav_link.(event_public_itinerary_path(@event), "Itinerary")
           = nav_link.(event_public_gallery_path(@event), "Gallery")
-          .mx-1.h-5.w-px.bg-base-300{ class: "hidden sm:block" }
+          -# Only signed-in users get app links here; anonymous visitors see just
+          -# the public widget nav (this is a public event page).
           - if user_signed_in?
+            .mx-1.h-5.w-px.bg-base-300{ class: "hidden sm:block" }
             - if current_user.organizer_of?(@event)
               = link_to "Manage event", event_manage_root_path(@event), class: "px-3 py-2 rounded-lg text-sm font-medium hover:bg-base-200"
             = link_to "App Dashboard", dashboard_path, class: "btn btn-primary btn-sm"
-          - else
-            = link_to "Home", root_path, class: "px-3 py-2 rounded-lg text-sm font-medium hover:bg-base-200"
-            = link_to "Log in", new_user_session_path, class: "btn btn-primary btn-sm"
     %main.flex-1.container.mx-auto.px-5.py-8.w-full
       = yield
     %footer.bg-base-100.border-t.border-base-300.mt-8

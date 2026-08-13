@@ -1,3 +1,33 @@
+# == Schema Information
+#
+# Table name: reviews
+#
+#  id              :integer          not null, primary key
+#  ai_generated    :boolean          default(FALSE), not null
+#  ai_rationale    :text
+#  coi             :boolean          default(FALSE), not null
+#  comment         :text
+#  scores          :json
+#  status          :string           default("pending"), not null
+#  submitted_at    :datetime
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  review_round_id :integer          not null
+#  submission_id   :integer          not null
+#  user_id         :integer          not null
+#
+# Indexes
+#
+#  index_reviews_on_review_round_id  (review_round_id)
+#  index_reviews_on_submission_id    (submission_id)
+#  index_reviews_on_user_id          (user_id)
+#
+# Foreign Keys
+#
+#  review_round_id  (review_round_id => review_rounds.id)
+#  submission_id    (submission_id => submissions.id)
+#  user_id          (user_id => users.id)
+#
 class Review < ApplicationRecord
   belongs_to :review_round
   belongs_to :submission

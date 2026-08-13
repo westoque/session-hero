@@ -1,3 +1,27 @@
+# == Schema Information
+#
+# Table name: review_rounds
+#
+#  id           :integer          not null, primary key
+#  anonymized   :boolean          default(FALSE), not null
+#  closes_at    :datetime
+#  instructions :text
+#  name         :string           not null
+#  opens_at     :datetime
+#  position     :integer          default(0)
+#  status       :string           default("open"), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  event_id     :integer          not null
+#
+# Indexes
+#
+#  index_review_rounds_on_event_id  (event_id)
+#
+# Foreign Keys
+#
+#  event_id  (event_id => events.id)
+#
 class ReviewRound < ApplicationRecord
   belongs_to :event
   has_many :review_criteria, dependent: :destroy

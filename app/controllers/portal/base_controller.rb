@@ -32,7 +32,8 @@ module Portal
 
     def require_speaker!
       return if current_speakers.any?
-      redirect_to root_path, alert: "You don't have a speaker portal yet."
+      redirect_to dashboard_path,
+        alert: "You don't have a speaker portal yet. You'll get one once you're a speaker at an event — submit a talk through an event's call-for-papers link, or ask an organizer to add you as a speaker."
     end
   end
 end

@@ -5,6 +5,7 @@
     %nav.flex.items-center.gap-1
       - if user_signed_in?
         = link_to "App Dashboard", dashboard_path, class: "btn btn-ghost btn-sm"
+        = link_to "Profile", edit_user_registration_path, class: "btn btn-ghost btn-sm"
         = button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-outline btn-sm"
       - else
         = link_to "Log in", new_user_session_path, class: "btn btn-ghost btn-sm"

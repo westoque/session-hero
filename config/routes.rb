@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: { registrations: "users/registrations" }
   get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["OK"]] }
   devise_for :admins
   namespace :admins do
