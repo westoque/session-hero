@@ -2,7 +2,7 @@
 %html
   %head
     %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
-    %title Admin · Open Session
+    %title Admin · SessionHero
     %meta{name: "viewport", content: "width=device-width,initial-scale=1"}
     = csrf_meta_tags
     = csp_meta_tag
@@ -17,7 +17,7 @@
     %header.navbar.bg-base-100.shadow-sm.border-b.border-base-300
       .container.mx-auto.px-5.flex.items-center
         .flex-1
-          = link_to "Open Session", admins_dashboard_path, class: "text-xl font-bold text-primary"
+          = link_to "SessionHero", admins_dashboard_path, class: "text-xl font-bold text-primary"
           %span.badge.badge-primary.badge-sm.ml-2.align-middle Admin
         %nav.flex.items-center.gap-1
           = link_to "Dashboard", admins_dashboard_path, class: "btn btn-ghost btn-sm"

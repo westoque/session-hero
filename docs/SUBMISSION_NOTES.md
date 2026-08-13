@@ -1,4 +1,4 @@
-# Open Session — submission notes for graders
+# SessionHero — submission notes for graders
 
 An open-source SessionBoard clone built on Ruby on Rails 8.1 (Hotwire, daisyUI,
 SQLite, Active Storage). Password authentication — **no magic links or OAuth**,

@@ -1,4 +1,4 @@
-# Open Session
+# SessionHero
 
 A self-hostable events platform for organizing conferences and collecting
 speaker submissions — create an event, share a public Call for Papers link, and
@@ -39,7 +39,7 @@ Then sign up at `/users/sign_up`, create an event, and share its CFP link.
 
 ## License
 
-Open Session is **source-available** under the **Apache License 2.0 with the
+SessionHero is **source-available** under the **Apache License 2.0 with the
 [Commons Clause](https://commonsclause.com/)** — see [LICENSE.md](LICENSE.md).
 
 - ✅ You may **self-host, modify, and use** it, including to run your own events

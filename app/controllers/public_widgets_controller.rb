@@ -178,7 +178,7 @@ class PublicWidgetsController < ApplicationController
     lines = []
     lines << "BEGIN:VCALENDAR"
     lines << "VERSION:2.0"
-    lines << "PRODID:-//Open Session//#{ics_escape(@event.name)}//EN"
+    lines << "PRODID:-//SessionHero//#{ics_escape(@event.name)}//EN"
     lines << "CALSCALE:GREGORIAN"
     lines << "METHOD:PUBLISH"
     lines << "X-WR-CALNAME:#{ics_escape(@event.name)}"

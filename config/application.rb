@@ -7,7 +7,7 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module OpenSession
+module SessionHero
   class Application < Rails::Application
     config.middleware.insert_before Rails::Rack::Logger, HealthcheckSilencer
     # Enable Gzip compression for responses

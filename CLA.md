@@ -1,6 +1,6 @@
 # Contributor License Agreement
 
-Thank you for your interest in contributing to **Open Session** (the "Project"),
+Thank you for your interest in contributing to **SessionHero** (the "Project"),
 maintained by **William Estoque** (the "Licensor").
 
 This Contributor License Agreement ("Agreement") clarifies the intellectual

@@ -1,5 +1,5 @@
 class EventMailer < ApplicationMailer
-  default from: "no-reply@opensession.example.com"
+  default from: "no-reply@sessionhero.example.com"
 
   def generic(to, subject, body)
     @body = body

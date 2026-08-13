@@ -31,7 +31,7 @@
         %label.drawer-overlay{ for: "manage-drawer" }
         %aside.w-64.min-h-full.bg-base-100.border-r.border-base-300.flex.flex-col.gap-1.p-3
           .px-3.py-2.mb-1
-            = link_to "Open Session", dashboard_path, class: "text-lg font-bold text-primary"
+            = link_to "SessionHero", dashboard_path, class: "text-lg font-bold text-primary"
             %div.text-xs.opacity-60 Organizer console
           = nav.(event_manage_root_path(@event), "Dashboard", "▣")
           = nav.(event_manage_submissions_path(@event), "Sessions", "▤")
