@@ -110,7 +110,7 @@ group :development, :test do
   # Document database columns in models
   gem "annotaterb", "~> 4.24", require: false
   # Use RSpec for testing
-  gem "rspec-rails", "~> 6.1.0"
+  gem "rspec-rails", "~> 8.0.4"
   # Use Factory Bot for fixtures
   gem "factory_bot_rails"
   # Use Timecop for time testing
