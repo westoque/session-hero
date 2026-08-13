@@ -82,7 +82,7 @@ gem "immosquare-cookies", "~> 2.0"
 # Use HTML2HAML to convert erb to haml
 gem "html2haml"
 # Use HAML for HTML templates
-gem "haml-rails", "~> 2.0"
+gem "haml-rails", "~> 3.1"
 # Use sitemap generator to generate sitemaps
 gem "sitemap_generator"
 # Use Simple Form for forms
