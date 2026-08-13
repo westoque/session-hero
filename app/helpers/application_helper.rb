@@ -27,13 +27,17 @@ module ApplicationHelper
   end
 
   # Avatar: headshot thumbnail if attached, else initials placeholder.
+  # Dimensions are inline styles (not Tailwind w-/h- classes) because the size is
+  # dynamic — the JIT scanner never sees the literal class and would purge it.
   def speaker_avatar(speaker, size: 10)
-    px = "w-#{size} h-#{size}"
+    rem = (size * 0.25).round(3)
+    dim = "width:#{rem}rem;height:#{rem}rem"
     if speaker.respond_to?(:headshot) && speaker.headshot.attached?
-      image_tag(speaker.headshot, class: "#{px} rounded-full object-cover", alt: speaker.name)
+      image_tag(speaker.headshot, class: "rounded-full object-cover shrink-0", style: dim, alt: speaker.name)
     else
-      content_tag(:div, speaker.try(:initials) || "?",
-                  class: "#{px} rounded-full bg-secondary text-secondary-content flex items-center justify-center font-semibold text-sm")
+      fs = size <= 8 ? "text-xs" : "text-sm"
+      content_tag(:div, speaker.try(:initials) || "?", style: dim,
+                  class: "rounded-full bg-secondary text-secondary-content flex items-center justify-center font-semibold shrink-0 #{fs}")
     end
   end
 

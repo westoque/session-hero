@@ -38,12 +38,13 @@
             %p.text-sm
               %span.font-semibold Audience level:
               = s.audience_level
-          - if s.answers.any?
+          - extra_answers = s.answers.except("Key takeaway", "Audience level").reject { |_, v| v.blank? }
+          - if extra_answers.any?
             .divider.my-2
-            - s.answers.each do |k, v|
+            - extra_answers.each do |k, v|
               %p.text-sm
                 %span.font-semibold= "#{k}: "
-                = v
+                = Array(v).join(", ")
 
       -# Reviews
       .card.bg-base-100.border.border-base-300
