@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_13_043307) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_13_194325) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -160,6 +160,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_043307) do
     t.datetime "cfp_opens_at"
     t.datetime "created_at", null: false
     t.integer "created_by_id"
+    t.datetime "demo_expires_at"
     t.text "description"
     t.date "ends_on"
     t.string "event_type", default: "Conference"
@@ -175,6 +176,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_043307) do
     t.datetime "updated_at", null: false
     t.string "website_url"
     t.index ["created_by_id"], name: "index_events_on_created_by_id"
+    t.index ["demo_expires_at"], name: "index_events_on_demo_expires_at"
     t.index ["slug"], name: "index_events_on_slug", unique: true
   end
 
@@ -421,6 +423,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_043307) do
 
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "demo_expires_at"
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "first_name"
@@ -429,6 +432,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_043307) do
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.datetime "updated_at", null: false
+    t.index ["demo_expires_at"], name: "index_users_on_demo_expires_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

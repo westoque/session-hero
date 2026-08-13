@@ -13,6 +13,7 @@
     = stylesheet_link_tag :app, "data-turbo-track": "reload"
     = javascript_importmap_tags
   %body.bg-base-200.min-h-screen
+    = render "shared/demo_banner"
     - nav = ->(path, label, icon){ link_to raw("#{icon} #{label}"), path, class: "flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-base-200 #{'bg-primary text-primary-content hover:bg-primary' if current_page?(path)}" }
     .drawer{ class: "lg:drawer-open" }
       %input#manage-drawer.drawer-toggle{ type: "checkbox" }/

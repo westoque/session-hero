@@ -35,10 +35,19 @@ module ApplicationHelper
     if speaker.respond_to?(:headshot) && speaker.headshot.attached?
       image_tag(speaker.headshot, class: "rounded-full object-cover shrink-0", style: dim, alt: speaker.name)
     else
-      fs = size <= 8 ? "text-xs" : "text-sm"
-      content_tag(:div, speaker.try(:initials) || "?", style: dim,
-                  class: "rounded-full bg-secondary text-secondary-content flex items-center justify-center font-semibold shrink-0 #{fs}")
+      fs = size <= 8 ? "text-xs" : (size <= 16 ? "text-sm" : "text-lg")
+      seed = speaker.try(:email).presence || speaker.try(:name).to_s
+      content_tag(:div, speaker.try(:initials).presence || "?",
+                  style: "#{dim};background-color:#{avatar_color(seed)}",
+                  class: "rounded-full text-white flex items-center justify-center font-semibold shrink-0 #{fs}")
     end
+  end
+
+  # Deterministic, pleasant avatar background per speaker so a gallery of
+  # default (no-photo) avatars still looks varied and intentional.
+  AVATAR_COLORS = %w[#2b8bff #9333ea #16a34a #db2777 #ea580c #0891b2 #4f46e5 #ca8a04].freeze
+  def avatar_color(seed)
+    AVATAR_COLORS[seed.to_s.bytes.sum % AVATAR_COLORS.size]
   end
 
   def fmt_datetime(dt)

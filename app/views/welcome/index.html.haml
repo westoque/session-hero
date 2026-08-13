@@ -6,7 +6,9 @@
         %p.text-lg.opacity-80 SessionHero helps you collect talk proposals, review them, onboard speakers, and publish your agenda — all in one place.
         .flex.flex-wrap.gap-2.justify-center.mt-2
           = link_to "Get started — it's free", new_user_registration_path, class: "btn btn-primary btn-lg"
+          = button_to "See live demo", demo_path, class: "btn btn-secondary btn-lg", form_class: "inline-block"
           = link_to "Log in", new_user_session_path, class: "btn btn-ghost btn-lg"
+        %p.text-xs.opacity-60.mt-1 No signup needed — the demo opens a fully-loaded event you can click through.
       = image_tag "/session-hero.png", alt: "SessionHero organizer dashboard", loading: "lazy", class: "w-full max-w-5xl h-auto rounded-t-box", style: "-webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent); mask-image: linear-gradient(to bottom, #000 78%, transparent);"
 
   %section.flex.flex-col.gap-6

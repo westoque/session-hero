@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: "users/registrations" }
   get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["OK"]] }
+
+  # Public "See demo" — provisions an isolated, self-expiring demo and logs in.
+  post "demo", to: "demos#create", as: :demo
   devise_for :admins
   namespace :admins do
     get "dashboard", to: "dashboard#index", as: :dashboard

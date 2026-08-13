@@ -13,6 +13,7 @@
     = stylesheet_link_tag :app, "data-turbo-track": "reload"
     = javascript_importmap_tags
   %body.bg-base-200.min-h-screen
+    = render "shared/demo_banner"
     - speaker = current_speakers.first
     - nav_link = ->(path, label){ link_to label, path, class: "btn btn-ghost btn-sm #{'btn-active' if current_page?(path)}" }
     %header.navbar.bg-primary.text-primary-content.sticky.top-0.z-30.shadow

@@ -6,6 +6,7 @@
 #  agenda_published :boolean          default(FALSE), not null
 #  cfp_closes_at    :datetime
 #  cfp_opens_at     :datetime
+#  demo_expires_at  :datetime
 #  description      :text
 #  ends_on          :date
 #  event_type       :string           default("Conference")
@@ -25,8 +26,9 @@
 #
 # Indexes
 #
-#  index_events_on_created_by_id  (created_by_id)
-#  index_events_on_slug           (slug) UNIQUE
+#  index_events_on_created_by_id    (created_by_id)
+#  index_events_on_demo_expires_at  (demo_expires_at)
+#  index_events_on_slug             (slug) UNIQUE
 #
 # Foreign Keys
 #
@@ -34,6 +36,12 @@
 #
 class Event < ApplicationRecord
   belongs_to :creator, class_name: "User", foreign_key: :created_by_id, optional: true, inverse_of: :created_events
+
+  # Throwaway events created by the public "See demo" flow; reaped after TTL and
+  # excluded from public "featured event" selection.
+  scope :demo,     -> { where.not(demo_expires_at: nil) }
+  scope :non_demo, -> { where(demo_expires_at: nil) }
+  def demo? = demo_expires_at.present?
 
   has_many :event_memberships, dependent: :destroy
   has_many :members, through: :event_memberships, source: :user

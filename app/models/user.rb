@@ -3,6 +3,7 @@
 # Table name: users
 #
 #  id                     :integer          not null, primary key
+#  demo_expires_at        :datetime
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
 #  first_name             :string
@@ -15,6 +16,7 @@
 #
 # Indexes
 #
+#  index_users_on_demo_expires_at       (demo_expires_at)
 #  index_users_on_email                 (email) UNIQUE
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
@@ -29,6 +31,10 @@ class User < ApplicationRecord
   # those paths set skip_name_validation to opt out until the person signs in.
   attr_accessor :skip_name_validation
   validates :first_name, :last_name, presence: true, unless: :skip_name_validation
+
+  # Throwaway accounts created by the public "See demo" flow; reaped after TTL.
+  scope :demo, -> { where.not(demo_expires_at: nil) }
+  def demo? = demo_expires_at.present?
 
   has_one  :speaker_profile, dependent: :destroy
   has_many :event_memberships, dependent: :destroy

@@ -81,7 +81,7 @@ class PublicWidgetsController < ApplicationController
 
   # ── 10. Top-level shortcuts → latest published event ────────────
   def featured
-    event = Event.where(status: "published").order(updated_at: :desc).first
+    event = Event.non_demo.where(status: "published").order(updated_at: :desc).first
     return redirect_to root_path unless event
 
     widget = params[:widget].to_s

@@ -1,0 +1,12 @@
+-# Slim top bar shown only to throwaway demo users, with quick links across every
+-# surface so one login can explore the whole product.
+- if current_user&.demo? && (demo_event = current_user.organizing_events.first)
+  .bg-primary.text-primary-content.text-sm.px-4.py-2
+    .container.mx-auto.flex.flex-wrap.items-center.justify-center.gap-x-4.gap-y-1
+      %span.font-medium 🚀 Live demo — click around freely; this sandbox resets automatically.
+      %span.opacity-80 Jump to:
+      = link_to "Organizer", event_manage_root_path(demo_event), class: "link link-hover font-medium"
+      = link_to "Public site", event_public_site_path(demo_event), class: "link link-hover font-medium", target: "_blank"
+      = link_to "Speaker portal", portal_root_path, class: "link link-hover font-medium"
+      = link_to "Reviewer", event_review_root_path(demo_event), class: "link link-hover font-medium"
+      = link_to "Exit demo", destroy_user_session_path, data: { turbo_method: :delete }, class: "link link-hover font-medium opacity-90"
