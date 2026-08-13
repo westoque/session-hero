@@ -8,6 +8,19 @@
       = link_to "Form settings", edit_event_manage_submission_form_path(@event, form), class: "btn btn-sm btn-outline"
       = link_to "View public form", event_submit_path(@event), class: "btn btn-sm btn-primary", target: "_blank"
 
+  .card.bg-base-100.border.border-base-300{ data: { controller: "clipboard", "clipboard-text-value": event_submit_url(@event) } }
+    .card-body.gap-2
+      %h2.font-semibold.text-sm Public form link
+      %p.text-xs.opacity-60 Share this link to collect submissions — no login required.
+      .join.w-full
+        %input.input.input-bordered.input-sm.join-item.w-full.font-mono.text-xs{ type: "text", readonly: true, value: event_submit_url(@event), data: { "clipboard-target": "source" }, onclick: "this.select()" }
+        %button.btn.btn-sm.join-item.tooltip.tooltip-left{ type: "button", "aria-label": "Copy link", data: { action: "clipboard#copy", tip: "Copy link" } }
+          %svg.w-4.h-4{ fill: "none", stroke: "currentColor", "stroke-width": "2", viewbox: "0 0 24 24", data: { "clipboard-target": "copyIcon" } }
+            %rect{ x: "9", y: "9", width: "13", height: "13", rx: "2", ry: "2" }
+            %path{ d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" }
+          %svg.w-4.h-4.hidden.text-success{ fill: "none", stroke: "currentColor", "stroke-width": "2.5", viewbox: "0 0 24 24", data: { "clipboard-target": "checkIcon" } }
+            %path{ d: "M20 6L9 17l-5-5" }
+
   .card.bg-base-100.border.border-base-300
     .card-body
       %h2.font-semibold.text-sm.opacity-60 Locked questions (always on the form)

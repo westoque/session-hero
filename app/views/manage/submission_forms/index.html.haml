@@ -18,3 +18,10 @@
                 %span.badge.badge-ghost.badge-sm Closed
               = link_to "Edit builder", event_manage_submission_form_path(@event, form), class: "btn btn-sm btn-outline"
               = link_to "View public form", event_submit_path(@event), class: "btn btn-sm btn-ghost", target: "_blank"
+              %span{ data: { controller: "clipboard", "clipboard-text-value": event_submit_url(@event) } }
+                %button.btn.btn-sm.btn-ghost.tooltip.tooltip-left{ type: "button", "aria-label": "Copy link", data: { action: "clipboard#copy", tip: "Copy link" } }
+                  %svg.w-4.h-4{ fill: "none", stroke: "currentColor", "stroke-width": "2", viewbox: "0 0 24 24", data: { "clipboard-target": "copyIcon" } }
+                    %rect{ x: "9", y: "9", width: "13", height: "13", rx: "2", ry: "2" }
+                    %path{ d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" }
+                  %svg.w-4.h-4.hidden.text-success{ fill: "none", stroke: "currentColor", "stroke-width": "2.5", viewbox: "0 0 24 24", data: { "clipboard-target": "checkIcon" } }
+                    %path{ d: "M20 6L9 17l-5-5" }
