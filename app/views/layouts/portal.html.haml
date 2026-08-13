@@ -16,6 +16,10 @@
     = render "shared/demo_banner"
     - speaker = current_speakers.first
     - nav_link = ->(path, label){ link_to label, path, class: "btn btn-ghost btn-sm #{'btn-active' if current_page?(path)}" }
+    -# Header sits on bg-primary (blue): non-active links are white; the active
+    -# one is a white pill with blue text. (Mobile nav below uses nav_link on a
+    -# light bar, so it keeps dark text.)
+    - header_nav = ->(path, label){ link_to label, path, class: (current_page?(path) ? "btn btn-sm border-0 shadow-none bg-primary-content text-primary hover:bg-primary-content" : "btn btn-sm btn-ghost border-0 text-primary-content hover:bg-primary-content/15") }
     %header.navbar.bg-primary.text-primary-content.sticky.top-0.z-30.shadow
       .flex-1.flex.items-center.gap-3.px-2
         = link_to portal_root_path, class: "flex items-center gap-2" do
@@ -31,16 +35,16 @@
               - portal_events.each do |ev|
                 %li= link_to ev.name, portal_sessions_path
       .flex-none.hidden.md:flex.gap-1
-        = nav_link.(portal_root_path, "Dashboard")
-        = nav_link.(portal_sessions_path, "My Sessions")
-        = nav_link.(portal_tasks_path, "Tasks")
-        = nav_link.(edit_portal_profile_path, "Profile")
+        = header_nav.(portal_root_path, "Dashboard")
+        = header_nav.(portal_sessions_path, "My Sessions")
+        = header_nav.(portal_tasks_path, "Tasks")
+        = header_nav.(edit_portal_profile_path, "Profile")
       .flex-none.flex.items-center.gap-2.px-2
         - if speaker
           .flex.items-center.gap-2
             = speaker_avatar(speaker, size: 8)
             %span.hidden.sm:inline.text-sm.font-medium= speaker.name
-        = button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-ghost btn-sm"
+        = button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-ghost btn-sm border-0 text-primary-content hover:bg-primary-content/15"
     / Mobile nav
     .navbar.bg-base-100.border-b.border-base-300.md:hidden.flex.gap-1.overflow-x-auto.px-2
       = nav_link.(portal_root_path, "Dashboard")
