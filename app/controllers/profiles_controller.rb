@@ -9,7 +9,7 @@ class ProfilesController < ApplicationController
 
   def update
     if @profile.update(profile_params)
-      redirect_to profile_path, notice: "Profile updated."
+      redirect_to speaker_profile_path, notice: "Profile updated."
     else
       render :edit, status: :unprocessable_entity
     end

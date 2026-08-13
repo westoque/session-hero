@@ -9,7 +9,8 @@ Rails.application.routes.draw do
 
   # ── Customer area (organizers + speakers share one User login) ──────────────
   get "dashboard", to: "dashboard#index"
-  resource :profile, only: %i[show edit update]
+  # /speaker-profile — the reusable speaker profile (used whenever you're speaking).
+  resource :speaker_profile, only: %i[show edit update], path: "speaker-profile", controller: "profiles"
 
   # ── Speaker portal (global, spans every event the speaker belongs to) ───────
   namespace :portal do
