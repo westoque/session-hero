@@ -1,4 +1,4 @@
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Open Session">
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SessionHero">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#2b8bff"/>
@@ -6,10 +6,13 @@
     </linearGradient>
   </defs>
   <rect width="512" height="512" rx="116" fill="url(#bg)"/>
-  <g fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="212" y="110" width="88" height="172" rx="44" fill="#ffffff" stroke="none"/>
-    <path d="M166 236 v20 a90 90 0 0 0 180 0 v-20"/>
-    <path d="M256 346 V402"/>
-    <path d="M210 402 H302"/>
-  </g>
+  <!-- binder tabs -->
+  <rect x="168" y="104" width="30" height="72" rx="15" fill="#ffffff"/>
+  <rect x="314" y="104" width="30" height="72" rx="15" fill="#ffffff"/>
+  <!-- calendar body -->
+  <rect x="96" y="140" width="320" height="284" rx="44" fill="#ffffff"/>
+  <!-- header strip -->
+  <path d="M96 184 a44 44 0 0 1 44 -44 h232 a44 44 0 0 1 44 44 v40 h-320 z" fill="#1560c7"/>
+  <!-- checkmark -->
+  <path d="M186 322 l46 46 l96 -104" fill="none" stroke="#1560c7" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
