@@ -1,4 +1,5 @@
--# Slim top bar shown only to throwaway demo users. Message only — no links.
+-# Slim top bar shown only to throwaway demo users. Amber (theme-independent,
+-# high contrast) so it stands apart from the blue app/portal headers below it.
 - if current_user&.demo?
-  .bg-primary.text-primary-content.text-sm.px-4.py-2.text-center.font-medium
-    🚀 You're in a live SessionHero demo — click around freely; this sandbox resets automatically.
+  .bg-amber-400.text-amber-950.text-sm.px-4.py-2.text-center.font-medium.border-b.border-amber-500
+    = "You're in a live SessionHero demo — this sandbox resets in #{distance_of_time_in_words(Time.current, current_user.demo_expires_at)}."
