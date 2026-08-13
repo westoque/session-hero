@@ -101,10 +101,6 @@ gem "sidekiq"
 gem "rubocop", require: false
 # Use Rubocap Rails for enforcing ruby on rails conventions
 gem "rubocop-rails", require: false
-# To upload assets to S3 after precompiling assets
-gem "asset_sync"
-# To use AWS with asset_sync
-gem "fog-aws"
 
 group :development, :test do
   # Document database columns in models

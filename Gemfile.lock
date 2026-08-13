@@ -80,12 +80,6 @@ GEM
     annotaterb (4.24.0)
       activerecord (>= 6.0.0)
       activesupport (>= 6.0.0)
-    asset_sync (2.19.3)
-      activemodel (>= 4.1.0)
-      cgi
-      fog-core
-      mime-types (>= 2.99)
-      unf
     ast (2.4.3)
     awesome_print (1.9.2)
     base64 (0.3.0)
@@ -110,7 +104,6 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
-    cgi (0.5.2)
     concurrent-ruby (1.3.8)
     connection_pool (3.0.2)
     crass (1.0.7)
@@ -134,8 +127,6 @@ GEM
     erubis (2.7.0)
     et-orbi (1.4.1)
       tzinfo
-    excon (1.7.0)
-      logger
     factory_bot (6.6.0)
       activesupport (>= 6.1.0)
     factory_bot_rails (6.5.1)
@@ -148,24 +139,6 @@ GEM
     ffi (1.17.4-arm64-darwin)
     ffi (1.17.4-x86_64-linux-gnu)
     ffi (1.17.4-x86_64-linux-musl)
-    fog-aws (3.33.2)
-      base64 (>= 0.2, < 0.4)
-      fog-core (~> 2.6)
-      fog-json (~> 1.1)
-      fog-xml (~> 0.1)
-    fog-core (2.6.0)
-      builder
-      excon (~> 1.0)
-      formatador (>= 0.2, < 2.0)
-      mime-types
-    fog-json (1.4.0)
-      fog-core
-      json (~> 2.19)
-    fog-xml (0.1.5)
-      fog-core
-      nokogiri (>= 1.5.11, < 2.0.0)
-    formatador (1.2.3)
-      reline
     fugit (1.13.0)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
@@ -239,10 +212,6 @@ GEM
     marcel (1.2.1)
     matrix (0.4.3)
     method_source (1.1.0)
-    mime-types (3.7.0)
-      logger
-      mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2026.0701)
     mini_magick (5.3.3)
       logger
     mini_mime (1.1.5)
@@ -496,7 +465,6 @@ GEM
       railties (>= 7.1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    unf (0.2.0)
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.2.0)
@@ -534,7 +502,6 @@ PLATFORMS
 
 DEPENDENCIES
   annotaterb (~> 4.24)
-  asset_sync
   awesome_print
   bootsnap
   brakeman
@@ -544,7 +511,6 @@ DEPENDENCIES
   debug
   devise
   factory_bot_rails
-  fog-aws
   haml-rails (~> 2.0)
   high_voltage
   html2haml
