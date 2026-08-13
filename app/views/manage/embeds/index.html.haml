@@ -1,0 +1,29 @@
+.max-w-4xl.flex.flex-col.gap-5
+  %h1.text-2xl.font-bold Embeds & Widgets
+  %p.opacity-60.text-sm Copy a snippet to embed any public widget on your own website, or use the JSON / iCal feeds for integrations. Hidden speakers and unapproved sessions are automatically excluded.
+
+  - @widgets.each do |w|
+    - embed_url = event_public_embed_url(@event, w)
+    - script = %Q{<iframe src="#{embed_url}" style="width:100%;height:600px;border:0" title="#{@event.name} #{w}"></iframe>}
+    .card.bg-base-100.border.border-base-300{ id: "embed-#{w}" }
+      .card-body.gap-2
+        .flex.items-center.justify-between.flex-wrap.gap-2
+          %h2.font-semibold.capitalize= "#{w} widget"
+          .flex.gap-2
+            %span.badge.badge-success.badge-sm Enabled
+            = link_to "Preview", event_public_embed_path(@event, w), class: "btn btn-xs btn-outline", target: "_blank"
+        %div
+          %label.text-xs.opacity-60 Embed code (iframe)
+          %textarea.textarea.textarea-bordered.w-full.font-mono.text-xs{ rows: 2, readonly: true, onclick: "this.select()" }= script
+        .flex.flex-wrap.gap-3.text-sm
+          %div
+            %span.opacity-60 Live URL:
+            = link_to embed_url, event_public_embed_path(@event, w), class: "link", target: "_blank"
+          - if %w[sessions speakers agenda itinerary].include?(w)
+            %div
+              %span.opacity-60 JSON feed:
+              = link_to "feed/#{w}.json", event_public_feed_path(@event, w, format: :json), class: "link", target: "_blank"
+          - if %w[agenda itinerary].include?(w)
+            %div
+              %span.opacity-60 iCal feed:
+              = link_to "feed/#{w}.ics", event_public_feed_path(@event, w, format: :ics), class: "link", target: "_blank"

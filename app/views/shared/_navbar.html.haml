@@ -5,8 +5,10 @@
     %nav.flex.items-center.gap-1
       - if user_signed_in?
         = link_to "Dashboard", dashboard_path, class: "btn btn-ghost btn-sm"
-        = link_to "New event", new_event_path, class: "btn btn-ghost btn-sm"
-        = link_to "Profile", profile_path, class: "btn btn-ghost btn-sm"
+        = link_to "Speaker Portal", portal_root_path, class: "btn btn-ghost btn-sm"
+        = link_to "CRM", crm_root_path, class: "btn btn-ghost btn-sm"
+        = link_to "New event", new_event_path, class: "btn btn-ghost btn-sm hidden sm:inline-flex"
+        = link_to "Profile", profile_path, class: "btn btn-ghost btn-sm hidden sm:inline-flex"
         = button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-outline btn-sm"
       - else
         = link_to "Log in", new_user_session_path, class: "btn btn-ghost btn-sm"

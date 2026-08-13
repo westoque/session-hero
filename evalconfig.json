@@ -1,0 +1,17 @@
+{
+  "url": "http://localhost:3000",
+  "areas": [],
+  "includeOptional": true,
+  "credentials": {
+    "organizer": { "email": "sbek-organizer@example.com", "password": "SbekTest!2027-org" },
+    "speaker":   { "email": "sbek-speaker@example.com",    "password": "SbekTest!2027-spk" },
+    "speaker2":  { "email": "sbek-speaker2@example.com",   "password": "SbekTest!2027-spk2" },
+    "reviewer":  { "email": "sbek-reviewer@example.com",   "password": "SbekTest!2027-rev" },
+    "attendee":  { "email": "sbek-attendee@example.com",   "password": "SbekTest!2027-att" }
+  },
+  "agentModel": "claude-sonnet-5",
+  "judgeModel": "claude-opus-5",
+  "maxTurnsPerScenario": 70,
+  "headless": true,
+  "submissionNotes": "Rails 8 SessionBoard clone. Password login (no magic links). Seeded event DevFlow Conf 2027 at /events/devflow-conf-2027. Organizer console at /events/devflow-conf-2027/manage; speaker portal at /portal; reviewer at /events/devflow-conf-2027/review; org-level CRM at /crm; public site at /events/devflow-conf-2027/site (top-level /sessions,/speakers,/agenda redirect there). See docs/SUBMISSION_NOTES.md."
+}

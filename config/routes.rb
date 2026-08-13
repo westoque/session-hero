@@ -103,6 +103,7 @@ Rails.application.routes.draw do
       end
       resources :communications, only: %i[index new create]
       resources :email_templates, except: %i[show]
+      get "embeds", to: "embeds#index"
       resources :session_versions, only: %i[] do
         member { post :restore }
       end

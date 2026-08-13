@@ -30,6 +30,7 @@ class PublicSubmissionsController < ApplicationController
     attach_speaker!   # sets user + speaker BEFORE save (user is required)
     if @submission.save
       link_participation!
+      send_confirmation!
       session.delete(:cfp_draft_id)
       redirect_to event_submit_path(@event),
         notice: @form.confirmation_message.presence || "Thanks! Your proposal “#{@submission.title}” was submitted."
@@ -135,6 +136,18 @@ class PublicSubmissionsController < ApplicationController
     return unless @speaker
     @submission.session_participants.find_or_create_by!(event_speaker: @speaker) { |p| p.role = "Speaker" }
     @speaker_user.event_memberships.find_or_create_by!(event: @event, role: :speaker)
+  end
+
+  # Confirmation email to the submitter, recorded in the in-app comms log (CFP-08).
+  def send_confirmation!
+    email = submitted_email
+    return if email.blank?
+    subject = "We received your proposal for #{@event.name}"
+    body = "Hi #{@speaker&.name || 'there'}, thanks for submitting “#{@submission.title}” to #{@event.name}. " \
+           "You can track its status and manage your submission from your speaker portal: #{portal_root_url}"
+    @event.communication_logs.create!(subject: subject, body: body, kind: "confirmation",
+      recipients: [{ "name" => @speaker&.name, "email" => email }], sent_at: Time.current)
+    EventMailer.generic(email, subject, body).deliver_later rescue nil
   end
 
   def submission_params
