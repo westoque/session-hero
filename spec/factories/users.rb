@@ -20,6 +20,7 @@
 #
 FactoryBot.define do
   factory :user do
-    
+    first_name { "Test" }
+    sequence(:last_name) { |n| "User#{n}" }
   end
 end

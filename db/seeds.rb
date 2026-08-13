@@ -15,18 +15,20 @@ end
 def wall(y, m, d, h, min = 0) = Time.utc(y, m, d, h, min)
 
 puts "Seeding accounts…"
-def upsert_user(email, password)
+def upsert_user(email, password, first_name:, last_name:)
   u = User.find_or_initialize_by(email: email)
   u.password = password
+  u.first_name = first_name
+  u.last_name = last_name
   u.save!
   u
 end
 
-organizer = upsert_user("sbek-organizer@example.com", "SbekTest!2027-org")
-priya_u   = upsert_user("sbek-speaker@example.com",    "SbekTest!2027-spk")
-marcus_u  = upsert_user("sbek-speaker2@example.com",   "SbekTest!2027-spk2")
-sam_u     = upsert_user("sbek-reviewer@example.com",   "SbekTest!2027-rev")
-alex_u    = upsert_user("sbek-attendee@example.com",   "SbekTest!2027-att")
+organizer = upsert_user("sbek-organizer@example.com", "SbekTest!2027-org",  first_name: "Olivia", last_name: "Bennett")
+priya_u   = upsert_user("sbek-speaker@example.com",    "SbekTest!2027-spk",  first_name: "Priya",  last_name: "Raman")
+marcus_u  = upsert_user("sbek-speaker2@example.com",   "SbekTest!2027-spk2", first_name: "Marcus", last_name: "Okafor")
+sam_u     = upsert_user("sbek-reviewer@example.com",   "SbekTest!2027-rev",  first_name: "Sam",    last_name: "Rivera")
+alex_u    = upsert_user("sbek-attendee@example.com",   "SbekTest!2027-att",  first_name: "Alex",   last_name: "Kim")
 
 puts "Rebuilding DevFlow Conf 2027…"
 Event.where(slug: "devflow-conf-2027").destroy_all

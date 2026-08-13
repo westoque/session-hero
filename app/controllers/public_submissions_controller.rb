@@ -113,7 +113,7 @@ class PublicSubmissionsController < ApplicationController
     name  = params.dig(:submission, :speaker_name).to_s.strip
     return if email.blank?
 
-    user = current_user || User.find_or_create_by!(email: email) { |u| u.password = SecureRandom.hex(24) }
+    user = current_user || User.find_or_create_by!(email: email) { |u| u.password = SecureRandom.hex(24); u.skip_name_validation = true }
     profile = user.speaker_profile || user.build_speaker_profile
     profile.name = name.presence || profile.name.presence || email
     profile.save!

@@ -52,7 +52,7 @@ class Manage::ReviewRoundsController < Manage::BaseController
     user = if params[:user_id].present?
       User.find_by(id: params[:user_id])
     elsif params[:email].present?
-      u = User.find_or_create_by!(email: params[:email].strip.downcase) { |x| x.password = SecureRandom.hex(24) }
+      u = User.find_or_create_by!(email: params[:email].strip.downcase) { |x| x.password = SecureRandom.hex(24); x.skip_name_validation = true }
       @event.event_memberships.find_or_create_by!(user: u, role: :reviewer)
       u
     end

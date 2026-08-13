@@ -24,6 +24,12 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  # Names are collected at sign up and required for real accounts. Placeholder
+  # accounts auto-provisioned by invite (speakers, reviewers) have no name yet;
+  # those paths set skip_name_validation to opt out until the person signs in.
+  attr_accessor :skip_name_validation
+  validates :first_name, :last_name, presence: true, unless: :skip_name_validation
+
   has_one  :speaker_profile, dependent: :destroy
   has_many :event_memberships, dependent: :destroy
   has_many :events, through: :event_memberships
