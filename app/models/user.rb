@@ -27,6 +27,15 @@ class User < ApplicationRecord
   has_many :events, through: :event_memberships
   has_many :created_events, class_name: "Event", foreign_key: :created_by_id, dependent: :nullify, inverse_of: :creator
   has_many :submissions, dependent: :destroy
+  has_many :contacts, foreign_key: :owner_id, dependent: :destroy, inverse_of: :owner
+  has_many :segments, foreign_key: :owner_id, dependent: :destroy, inverse_of: :owner
+  has_many :review_assignments, dependent: :destroy
+  has_many :reviews, dependent: :destroy
+
+  # Speaker portal identity: roster entries across all events keyed to this email.
+  def event_speakers = EventSpeaker.where("lower(email) = ?", email.to_s.downcase)
+  def portal_events  = Event.where(id: event_speakers.select(:event_id))
+  def reviewer_of?(event) = event_memberships.exists?(event: event, role: :reviewer)
 
   # Events where this user wears a given hat. Role lives on the membership,
   # not the user, so the same person can organize one event and speak at another.
