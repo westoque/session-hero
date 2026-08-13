@@ -211,7 +211,6 @@ GEM
       activesupport (>= 6.1)
     marcel (1.2.1)
     matrix (0.4.3)
-    method_source (1.1.0)
     mini_magick (5.3.3)
       logger
     mini_mime (1.1.5)
@@ -470,10 +469,10 @@ GEM
     unicode-emoji (4.2.0)
     uri (1.1.1)
     useragent (0.16.11)
-    view_component (3.25.0)
-      activesupport (>= 5.2.0, < 8.2)
+    view_component (4.12.0)
+      actionview (>= 7.1.0)
+      activesupport (>= 7.1.0)
       concurrent-ruby (~> 1)
-      method_source (~> 1.0)
     warden (1.2.9)
       rack (>= 2.0.9)
     web-console (4.3.0)
@@ -545,7 +544,7 @@ DEPENDENCIES
   title
   turbo-rails
   tzinfo-data
-  view_component (~> 3.25)
+  view_component (~> 4.12)
   web-console
 
 BUNDLED WITH
