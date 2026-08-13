@@ -116,5 +116,5 @@ end
 
 group :test do
   # Use Shoulda Matchers for test matchers
-  gem "shoulda-matchers", "~> 6.0"
+  gem "shoulda-matchers", "~> 8.0"
 end
