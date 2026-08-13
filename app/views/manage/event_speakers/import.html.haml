@@ -1,6 +1,6 @@
 .max-w-lg.flex.flex-col.gap-4
   %h1.text-2xl.font-bold Import speakers from CSV
-  %p.opacity-60.text-sm Columns: %code name, email, title, company, bio. Existing speakers (matched by email) are updated.
+  %p.opacity-60.text-sm Columns: <code>name, email, title, company, bio</code>. Existing speakers (matched by email) are updated.
   = form_tag import_event_manage_speakers_path(@event), method: :post, multipart: true, class: "card bg-base-100 border border-base-300" do
     .card-body.gap-3
       = file_field_tag :file, accept: ".csv", class: "file-input file-input-bordered w-full"

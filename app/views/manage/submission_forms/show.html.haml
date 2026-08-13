@@ -11,10 +11,16 @@
   .card.bg-base-100.border.border-base-300
     .card-body
       %h2.font-semibold.text-sm.opacity-60 Locked questions (always on the form)
-      %ul.text-sm.list-disc.ml-5.mt-1
-        %li Session title %span.badge.badge-ghost.badge-xs required
-        %li Abstract / description %span.badge.badge-ghost.badge-xs required
-        %li Session format %li Track %li Speaker name & email
+      %ul.text-sm.flex.flex-col.gap-1.mt-1
+        %li.flex.items-center.gap-2
+          Session title
+          %span.badge.badge-ghost.badge-xs required
+        %li.flex.items-center.gap-2
+          Abstract / description
+          %span.badge.badge-ghost.badge-xs required
+        %li Session format
+        %li Track
+        %li Speaker name &amp; email
 
   .card.bg-base-100.border.border-base-300
     .card-body

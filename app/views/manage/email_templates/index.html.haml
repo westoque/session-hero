@@ -2,7 +2,7 @@
   .flex.items-center.justify-between
     %h1.text-2xl.font-bold Email Templates
     = link_to "＋ New template", new_event_manage_email_template_path(@event), class: "btn btn-primary btn-sm"
-  %p.opacity-60.text-sm Reusable templates with merge fields like %code {speaker_name} and %code {talk_title}.
+  %p.opacity-60.text-sm Reusable templates with merge fields like <code>{speaker_name}</code> and <code>{talk_title}</code>.
   .flex.flex-col.gap-3
     - @templates.each do |t|
       .card.bg-base-100.border.border-base-300

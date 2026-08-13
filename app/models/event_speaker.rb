@@ -15,6 +15,10 @@ class EventSpeaker < ApplicationRecord
   default_scope { order(:position, :name) }
   scope :public_visible, -> { where(public_visible: true) }
 
+  # Every speaker added to an event flows into the organizers' cross-event
+  # Speaker CRM, so the CRM stays the master contact database.
+  after_commit :sync_to_crm, on: %i[create update]
+
   def initials
     name.to_s.split.map(&:first).first(2).join.upcase.presence || "?"
   end
@@ -22,5 +26,29 @@ class EventSpeaker < ApplicationRecord
   # Sessions this speaker actually presents (accepted/scheduled), for portal + public.
   def sessions
     submissions
+  end
+
+  # Upsert a CRM contact for each organizer of this event, matched by email
+  # (or name when there's no email). Only fills blank fields so organizer edits
+  # in the CRM aren't clobbered by later roster edits.
+  def sync_to_crm
+    event.organizers.each do |owner|
+      contact =
+        if email.present?
+          owner.contacts.where("lower(email) = ?", email.downcase).first ||
+            owner.contacts.new(email: email)
+        else
+          owner.contacts.where("lower(name) = ?", name.to_s.downcase).first ||
+            owner.contacts.new
+        end
+      contact.name       = name if contact.name.blank?
+      contact.email      = email if contact.email.blank? && email.present?
+      contact.company    = company if contact.company.blank? && company.present?
+      contact.job_title  = title if contact.job_title.blank? && title.present?
+      contact.bio        = bio if contact.bio.blank? && bio.present?
+      contact.save if contact.new_record? || contact.changed?
+    end
+  rescue => e
+    Rails.logger.warn("EventSpeaker#sync_to_crm failed for ##{id}: #{e.message}")
   end
 end
