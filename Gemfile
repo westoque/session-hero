@@ -73,7 +73,7 @@ gem "awesome_print"
 # Use Devise for authentication
 gem "devise"
 # Provide email subscriptions and one-click unsubscribe
-gem "mailkick", "~> 1.3.1"
+gem "mailkick", "~> 3.0.0"
 # Provide GDPR cookie consent controls
 gem "immosquare-cookies", "~> 2.0"
 # Use HTML2HAML to convert erb to haml
