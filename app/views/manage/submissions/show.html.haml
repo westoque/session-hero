@@ -17,9 +17,12 @@
       - %w[accepted waitlisted rejected].each do |st|
         = button_to st.humanize, decide_event_manage_submission_path(@event, s, status: st), method: :patch, class: "btn btn-sm #{s.status == st ? 'btn-primary' : 'btn-outline'}"
       %span.opacity-40 |
-      = button_to "Approve content", approve_event_manage_deliverable_path(@event, s.deliverables.first || 0), method: :post, class: "btn btn-sm btn-success", form: { style: s.deliverables.any? ? "" : "display:none" } if false
       = button_to "Send to agenda", convert_event_manage_submission_path(@event, s), method: :post, class: "btn btn-sm btn-secondary"
-      = form_tag edit_event_manage_submission_path(@event, s), method: :get, class: "inline"
+      %span.opacity-40 |
+      %span.text-sm.opacity-60 Content:
+      = simple_form_for s, url: event_manage_submission_path(@event, s), method: :patch, html: { class: "flex gap-1 items-center" } do |cf|
+        = cf.input :content_status, collection: Submission::CONTENT_STATUSES.map { |x| [x.humanize, x] }, label: false, wrapper: false, input_html: { class: "select select-sm", onchange: "this.form.requestSubmit()" }
+        %noscript= cf.button :submit, "Set", class: "btn btn-sm"
 
   .grid.grid-cols-1.gap-5{ class: "md:grid-cols-3" }
     .md:col-span-2.flex.flex-col.gap-4
