@@ -94,7 +94,7 @@ gem "high_voltage"
 # Use Title for dynamic page titles
 gem "title"
 # Organize reusable, testable view components
-gem "view_component", "~> 3.25"
+gem "view_component", "~> 4.12"
 # Use Sidekiq for background jobs
 gem "sidekiq"
 # Use Rubocop for linting
