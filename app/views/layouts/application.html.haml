@@ -5,7 +5,7 @@
     %title= title_tag
     %meta{:content => "width=device-width,initial-scale=1", :name => "viewport"}/
     %meta{:content => "yes", :name => "apple-mobile-web-app-capable"}/
-    %meta{:content => "Open Session", :name => "application-name"}/
+    %meta{:content => "SessionHero", :name => "application-name"}/
     %meta{:content => "yes", :name => "mobile-web-app-capable"}/
     = csrf_meta_tags
     = csp_meta_tag
@@ -17,9 +17,12 @@
     = stylesheet_link_tag :app, "data-turbo-track": "reload"
     = javascript_importmap_tags
   -# pt-16 offsets the fixed navbar so body content (flash included) clears it.
-  %body.pt-16
+  %body.pt-16.min-h-screen.flex.flex-col
     = render 'shared/navbar'
     = render 'shared/flash'
     = render "immosquare-cookies/consent_banner"
-    %main.container.mx-auto.mt-12.px-5.flex
+    %main.container.mx-auto.mt-12.px-5.flex.flex-1.w-full.items-start
       = yield
+    %footer.border-t.border-base-300.mt-12
+      .container.mx-auto.px-5.py-6.text-center.text-sm.opacity-70
+        = render "shared/made_with"

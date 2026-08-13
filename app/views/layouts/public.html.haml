@@ -45,6 +45,8 @@
           - if @event.location.present?
             %span.mx-1 ·
             = @event.location
-        %div
-          Powered by
-          = link_to "Open Session", root_path, class: "link link-hover font-medium"
+        %div.flex.flex-col.gap-1{ class: "sm:items-end" }
+          %div
+            Powered by
+            = link_to "SessionHero", root_path, class: "link link-hover font-medium"
+          = render "shared/made_with"

@@ -39,3 +39,6 @@
 
 # Local eval kit (has its own git repo) — reference only
 docs/killmysaas-evals/
+
+# macOS
+.DS_Store
