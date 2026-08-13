@@ -60,3 +60,19 @@
     --radius-field: 0.75rem;
   }
 }
+
+/* ── Select boxes ────────────────────────────────────────────────────────────
+   daisyUI v5.7's `.select` opts into CSS `appearance: base-select`, which makes
+   modern Chromium render its OWN dropdown arrow on top of daisyUI's decorative
+   one — a double chevron. These rules are UNLAYERED, so they beat daisyUI's
+   layered styles regardless of specificity: force the classic single-arrow
+   look with one chevron we draw ourselves. */
+select.select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%236b7280' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+}
+select.select::-ms-expand { display: none; }

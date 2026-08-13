@@ -19,7 +19,7 @@
               %p.text-sm.opacity-70= "#{event.submissions.count} submission".pluralize(event.submissions.count)
               .card-actions.mt-2
                 = link_to "Manage", event_manage_root_path(event), class: "btn btn-primary btn-sm"
-                = link_to "View", event_path(event), class: "btn btn-ghost btn-sm"
+                = link_to "Public site", event_public_site_path(event), class: "btn btn-ghost btn-sm"
     - else
       .card.bg-base-200.border.border-dashed.border-base-300
         .card-body.items-center.text-center
@@ -41,7 +41,6 @@
               %p.text-sm.opacity-70= "#{mine.count} of your submissions".sub(/^1 of/, "1")
               .card-actions.mt-2
                 = link_to "Your submissions", event_submissions_path(event), class: "btn btn-secondary btn-sm"
-                = link_to "View", event_path(event), class: "btn btn-ghost btn-sm"
     - else
       .card.bg-base-200.border.border-dashed.border-base-300
         .card-body.items-center.text-center

@@ -65,6 +65,13 @@ SimpleForm.setup do |config|
   config.error_notification_tag   = :div
   config.error_notification_class = "alert alert-error mb-4"
 
+  # Only add simple_form's auto CSS classes (input type / required / optional) to
+  # the actual input — NOT the wrapper or label. Otherwise a select input's
+  # wrapper <fieldset> and its <label> each get a bare `select` class, which
+  # collides with daisyUI's `.select` component and renders extra select-styled
+  # boxes (doubled chevrons) around the real <select>.
+  config.generate_additional_classes_for = %i[input]
+
   config.button_class      = "btn"
   config.boolean_style     = :nested
   config.browser_validations = false

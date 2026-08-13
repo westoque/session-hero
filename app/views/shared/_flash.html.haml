@@ -11,7 +11,7 @@
   - else
     - "bg-gray-100 border border-gray-400 text-gray-700"
   .flash-message{class: flash_class, role: "alert"}
-    .container.mx-auto.px-4.py-3.relative
+    .container.mx-auto.px-4.py-3.flex.items-center.justify-between.gap-4
       %p.font-medium= msg
-      %button.absolute.top-0.bottom-0.right-0.px-4.py-3{"data-dismiss" => "alert", type: "button"}
-        %span.text-2xl &times;
+      %button.shrink-0.text-2xl.leading-none.opacity-70{class: "hover:opacity-100", "data-dismiss" => "alert", type: "button", "aria-label" => "Dismiss"}
+        &times;

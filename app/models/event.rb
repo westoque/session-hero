@@ -91,10 +91,22 @@ class Event < ApplicationRecord
     ends_on && ends_on != starts_on ? "#{starts_on.strftime('%b %-d')} – #{ends_on.strftime('%b %-d, %Y')}" : starts_on.strftime("%B %-d, %Y")
   end
 
+  # Longest span we'll ever render as day tabs. Guards against mis-entered dates
+  # (e.g. a year typo) that would otherwise generate thousands of empty tabs and
+  # make the agenda page crawl.
+  MAX_AGENDA_DAYS = 21
+
   # Distinct event days spanned by the agenda (for day tabs).
   def agenda_days
     return [] unless starts_on
     last = ends_on || starts_on
+    last = starts_on if last < starts_on
+    if (last - starts_on).to_i + 1 > MAX_AGENDA_DAYS
+      # Absurd range → fall back to the days that actually have scheduled
+      # sessions, or just the start day. Never render a runaway list of tabs.
+      days = scheduled_sessions.filter_map { |s| s.starts_at&.to_date }.uniq.sort
+      return days.presence || [starts_on]
+    end
     (starts_on..last).to_a
   end
 
