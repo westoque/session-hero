@@ -1,0 +1,12 @@
+.max-w-xl.flex.flex-col.gap-4
+  %h1.text-2xl.font-bold Form settings
+  = simple_form_for @form, url: event_manage_submission_form_path(@event, @form), method: :patch do |f|
+    = f.input :name, label: "Internal name"
+    = f.input :title, label: "Public title"
+    = f.input :welcome_message, as: :text, input_html: { rows: 3 }
+    = f.input :confirmation_message, as: :text, input_html: { rows: 2 }, hint: "Shown after a successful submission."
+    = f.input :closes_at, as: :string, input_html: { type: "datetime-local", value: @form.closes_at&.strftime("%Y-%m-%dT%H:%M") }, label: "Close date", hint: "After this date the form blocks new submissions and edits."
+    = f.input :published, as: :boolean
+    .flex.gap-2.mt-2
+      = f.button :submit, "Save settings", class: "btn btn-primary"
+      = link_to "Back to builder", event_manage_submission_form_path(@event, @form), class: "btn btn-ghost"

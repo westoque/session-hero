@@ -1,0 +1,35 @@
+- content_for(:title, "Speakers — #{@event.name}")
+.flex.flex-col.gap-6
+  .flex.flex-col.gap-1
+    %h1.text-3xl.font-bold Speakers
+    - if @speakers.size == @total
+      %p.opacity-70= "#{@total} #{'speaker'.pluralize(@total)}"
+    - else
+      %p.opacity-70= "Showing #{@speakers.size} of #{@total} speakers"
+
+  .card.bg-base-100.shadow-sm.border.border-base-300
+    .card-body
+      = form_with url: event_public_speakers_path(@event), method: :get, class: "flex flex-wrap gap-2 items-end" do |f|
+        .form-control.flex-1{ style: "min-width: 220px" }
+          = f.label :q, "Search speakers by name", class: "label label-text text-xs"
+          = f.search_field :q, value: params[:q], placeholder: "e.g. Priya…", class: "input input-bordered w-full"
+        = f.submit "Search", class: "btn btn-primary"
+        - if params[:q].present?
+          = link_to "Reset", event_public_speakers_path(@event), class: "btn btn-ghost"
+
+  - if @speakers.any?
+    .card.bg-base-100.shadow-sm.border.border-base-300
+      %ul.divide-y.divide-base-200
+        - @speakers.each do |sp|
+          %li
+            = link_to event_public_speaker_path(@event, sp), class: "flex items-center gap-4 p-4 hover:bg-base-200 transition-colors" do
+              = speaker_avatar(sp, size: 12)
+              .flex-1.min-w-0
+                .font-semibold.truncate= sp.name
+                - if speaker_role(sp).present?
+                  .text-sm.opacity-60.truncate= speaker_role(sp)
+              %span.text-lg.opacity-40 ›
+  - else
+    .text-center.py-16.opacity-60
+      %p.text-lg No speakers match your search.
+      = link_to "Clear search", event_public_speakers_path(@event), class: "link link-primary"

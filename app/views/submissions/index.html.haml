@@ -2,16 +2,19 @@
   .flex.items-center.justify-between
     %h1.text-2xl.font-bold= "Your submissions · #{@event.name}"
     = link_to "Submit another", event_submit_path(@event), class: "btn btn-primary btn-sm"
+  - unless @event.cfp_open?
+    .alert.alert-warning
+      %span The call for papers is closed. Your submissions are read-only.
   - if @submissions.any?
     .flex.flex-col.gap-3
       - @submissions.each do |s|
         .card.bg-base-100.shadow-sm.border.border-base-300
           .card-body.py-4
             .flex.items-center.justify-between
-              .flex.flex-col
-                %span.font-semibold= s.title
-                %span.badge.badge-sm.badge-ghost.mt-1= s.status.humanize
-              = link_to "Edit", edit_event_submission_path(@event, s), class: "btn btn-ghost btn-sm"
+              .flex.flex-col.gap-1
+                = link_to s.title, event_submission_path(@event, s), class: "font-semibold link"
+                = status_badge(s.status)
+              = link_to (@event.cfp_open? ? "Edit" : "View"), (@event.cfp_open? ? edit_event_submission_path(@event, s) : event_submission_path(@event, s)), class: "btn btn-ghost btn-sm"
   - else
     .card.bg-base-200.border.border-dashed.border-base-300
       .card-body.items-center.text-center

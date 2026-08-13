@@ -1,0 +1,35 @@
+.w-full.flex.flex-col.gap-6
+  .flex.items-center.justify-between.flex-wrap.gap-2
+    .flex.flex-col.gap-1
+      %h1.text-3xl.font-bold Pipeline
+      %span.text-sm.opacity-70
+        %span.font-semibold= @total_enrolled
+        contact(s) enrolled across all events
+    = link_to "Directory", crm_contacts_path, class: "btn btn-ghost btn-sm"
+
+  .overflow-x-auto
+    .flex.gap-4{ style: "min-width: max-content" }
+      - @stages.each do |stage|
+        .flex.flex-col.gap-3.w-72.shrink-0
+          .flex.items-center.justify-between.px-1
+            %h2.font-semibold= stage
+            %span.badge.badge-neutral.badge-sm= @by_stage[stage].size
+          .flex.flex-col.gap-2.bg-base-100.border.border-base-300.rounded-lg.p-2{ style: "min-height: 6rem" }
+            - @by_stage[stage].each do |c|
+              .card.bg-base-200.border.border-base-300
+                .card-body.p-3.gap-2
+                  = link_to c.name, crm_contact_path(c), class: "link link-hover font-medium text-sm"
+                  - if c.company.present?
+                    %div.text-xs.opacity-70= c.company
+                  .flex.items-center.justify-between
+                    - if c.pipeline_score.present?
+                      %span.badge.badge-primary.badge-sm= "Score #{c.pipeline_score}"
+                    - else
+                      %span
+                  = form_with url: move_stage_crm_contact_path(c), method: :patch, class: "flex gap-1 mt-1" do
+                    %select.select.select-bordered.select-xs.flex-1{ name: "stage" }
+                      - @stages.each do |s|
+                        %option{ value: s, selected: c.pipeline_stage == s }= s
+                    %button.btn.btn-xs.btn-secondary{ type: "submit" } Move
+            - if @by_stage[stage].empty?
+              %p.text-xs.opacity-50.text-center.py-4 Empty

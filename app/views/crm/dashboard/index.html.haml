@@ -1,0 +1,90 @@
+.w-full.max-w-5xl.mx-auto.flex.flex-col.gap-6
+  .flex.items-center.justify-between
+    .flex.flex-col.gap-1
+      %h1.text-3xl.font-bold Speaker CRM
+      %span.text-sm.opacity-70 Your cross-event speaker directory and pipeline
+    .flex.gap-2
+      = link_to "Directory", crm_contacts_path, class: "btn btn-ghost btn-sm"
+      = link_to "Import CSV", import_crm_contacts_path, class: "btn btn-ghost btn-sm"
+      = link_to "New contact", new_crm_contact_path, class: "btn btn-primary btn-sm"
+
+  / KPI cards
+  .stats.shadow.bg-base-100.border.border-base-300.w-full{ class: "stats-vertical sm:stats-horizontal" }
+    = link_to crm_contacts_path, class: "stat hover:bg-base-200" do
+      .stat-title Total contacts
+      .stat-value.text-primary= @total
+    = link_to crm_pipeline_path, class: "stat hover:bg-base-200" do
+      .stat-title In pipeline
+      .stat-value= @enrolled
+    = link_to crm_segments_path, class: "stat hover:bg-base-200" do
+      .stat-title Segments
+      .stat-value= @segments_count
+
+  .grid.grid-cols-1.gap-6{ class: "lg:grid-cols-2" }
+    / Top companies widget
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        %h2.card-title Top companies
+        - if @top_companies.any?
+          - max = @top_companies.values.max
+          .flex.flex-col.gap-2.mt-2
+            - @top_companies.each do |company, count|
+              = link_to crm_contacts_path(company: company), class: "flex flex-col gap-1 hover:opacity-80" do
+                .flex.justify-between.text-sm
+                  %span.font-medium= company
+                  %span.opacity-70= count
+                %progress.progress.progress-primary.w-full{ value: count, max: max }
+        - else
+          %p.opacity-70.mt-2 No company data yet.
+
+    / Speaker type widget
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        %h2.card-title Contacts by speaker type
+        - if @by_speaker_type.any?
+          - max = @by_speaker_type.values.max
+          .flex.flex-col.gap-2.mt-2
+            - @by_speaker_type.each do |type, count|
+              .flex.flex-col.gap-1
+                .flex.justify-between.text-sm
+                  %span.font-medium= type
+                  %span.opacity-70= count
+                %progress.progress.progress-secondary.w-full{ value: count, max: max }
+        - else
+          %p.opacity-70.mt-2 No speaker-type data yet.
+
+  / Pipeline breakdown
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      .flex.items-center.justify-between
+        %h2.card-title Pipeline breakdown
+        = link_to "Open pipeline", crm_pipeline_path, class: "btn btn-secondary btn-sm"
+      - if @by_stage.any?
+        .flex.flex-wrap.gap-2.mt-2
+          - Contact::STAGES.each do |stage|
+            .badge.badge-lg.gap-2
+              = stage
+              %span.font-bold= @by_stage[stage] || 0
+      - else
+        %p.opacity-70.mt-2 No one enrolled yet.
+
+  / Recent sent email logs
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      %h2.card-title Recent sent emails
+      - if @recent_logs.any?
+        .overflow-x-auto.mt-2
+          %table.table.table-sm
+            %thead
+              %tr
+                %th Subject
+                %th Recipients
+                %th Sent
+            %tbody
+              - @recent_logs.each do |log|
+                %tr
+                  %td= log.subject.presence || "(no subject)"
+                  %td= log.recipient_count
+                  %td= fmt_datetime(log.sent_at)
+      - else
+        %p.opacity-70.mt-2 No bulk emails sent yet.

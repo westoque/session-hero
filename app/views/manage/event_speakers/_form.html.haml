@@ -1,0 +1,19 @@
+= simple_form_for speaker, url: (speaker.persisted? ? event_manage_speaker_path(@event, speaker) : event_manage_speakers_path(@event)), html: { multipart: true } do |f|
+  = f.error_notification
+  .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2" }
+    = f.input :name
+    = f.input :email
+    = f.input :title, label: "Job title"
+    = f.input :company
+    = f.input :twitter
+    = f.input :linkedin
+    = f.input :status, collection: EventSpeaker::STATUSES.map { |s| [s.humanize, s] }, include_blank: false
+    = f.input :public_visible, as: :boolean, label: "Show on public site"
+  = f.input :bio, as: :text, input_html: { rows: 4 }
+  = f.input :travel_notes, as: :text, input_html: { rows: 2 }, label: "Travel / logistics", hint: "e.g. Arrival May 11, aisle seat; dietary: Vegetarian"
+  = f.input :headshot, as: :file
+  - if speaker.headshot.attached?
+    = image_tag speaker.headshot, class: "w-20 h-20 rounded-full object-cover mt-1"
+  .flex.gap-2.mt-3
+    = f.button :submit, "Save speaker", class: "btn btn-primary"
+    = link_to "Cancel", event_manage_speakers_path(@event), class: "btn btn-ghost"

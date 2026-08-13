@@ -1,0 +1,27 @@
+.max-w-4xl.flex.flex-col.gap-5
+  .flex.items-center.justify-between.flex-wrap.gap-2
+    %h1.text-2xl.font-bold Evaluation
+    .flex.gap-2
+      = link_to "Results", results_event_manage_review_rounds_path(@event), class: "btn btn-outline btn-sm"
+      = link_to "＋ New round", new_event_manage_review_round_path(@event), class: "btn btn-primary btn-sm"
+  %p.opacity-60.text-sm Run multi-round review with scorecards, reviewer pools, and blind review.
+  - if @rounds.any?
+    .flex.flex-col.gap-3
+      - @rounds.each do |r|
+        .card.bg-base-100.border.border-base-300
+          .card-body
+            .flex.items-center.justify-between.flex-wrap.gap-2
+              %div
+                %h2.font-semibold= r.name
+                %p.text-xs.opacity-60= "#{fmt_date(r.opens_at)} – #{fmt_date(r.closes_at)}"
+              .flex.items-center.gap-2
+                - if r.anonymized
+                  %span.badge.badge-info.badge-sm Blind review
+                %span.badge.badge-ghost.badge-sm= "#{r.review_criteria.count} criteria"
+                %span.badge.badge-ghost.badge-sm= "#{r.reviewers.count} reviewers"
+                = link_to "Open", event_manage_review_round_path(@event, r), class: "btn btn-sm btn-primary"
+  - else
+    .card.bg-base-200.border.border-dashed.border-base-300
+      .card-body.items-center.text-center
+        %p.opacity-60 No evaluation rounds yet.
+        = link_to "Create your first round", new_event_manage_review_round_path(@event), class: "btn btn-primary btn-sm mt-1"

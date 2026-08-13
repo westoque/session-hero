@@ -1,6 +1,7 @@
 class FormField < ApplicationRecord
   belongs_to :submission_form
   belongs_to :conditional_field, class_name: "FormField", optional: true
+  attr_accessor :options_text
   default_scope { order(:position, :id) }
 
   FIELD_TYPES = %w[short_text long_text dropdown checkbox number].freeze

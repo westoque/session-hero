@@ -1,0 +1,50 @@
+- content_for(:title, "Sessions — #{@event.name}")
+- base = request.query_parameters
+.flex.flex-col.gap-6
+  .flex.flex-col.gap-1
+    %h1.text-3xl.font-bold Sessions
+    - if @sessions.size == @total
+      %p.opacity-70= "#{@total} #{'session'.pluralize(@total)}"
+    - else
+      %p.opacity-70= "Showing #{@sessions.size} of #{@total} sessions"
+
+  .card.bg-base-100.shadow-sm.border.border-base-300
+    .card-body.gap-4
+      = form_with url: event_public_sessions_path(@event), method: :get, class: "flex flex-wrap gap-2 items-end" do |f|
+        - base.except("q", "page").each do |k, v|
+          = hidden_field_tag k, v
+        .form-control.flex-1{ style: "min-width: 220px" }
+          = f.label :q, "Search sessions or speakers", class: "label label-text text-xs"
+          = f.search_field :q, value: params[:q], placeholder: "e.g. CI, Priya Raman…", class: "input input-bordered w-full"
+        = f.submit "Search", class: "btn btn-primary"
+        - if params[:q].present? || params[:track].present? || params[:format].present? || params[:room].present?
+          = link_to "Reset", event_public_sessions_path(@event), class: "btn btn-ghost"
+
+      - facet = ->(label, key, value){ link_to label, event_public_sessions_path(@event, base.merge(key => value).compact_blank), class: "btn btn-xs #{params[key].to_s == value.to_s ? 'btn-primary' : 'btn-outline'}" }
+      - if @tracks.any?
+        .flex.flex-wrap.items-center.gap-2
+          %span.text-xs.font-semibold.opacity-60.w-16 Track
+          = facet.("All", :track, nil)
+          - @tracks.each do |t|
+            = facet.(t.name, :track, t.name)
+      - if @formats.any?
+        .flex.flex-wrap.items-center.gap-2
+          %span.text-xs.font-semibold.opacity-60.w-16 Format
+          = facet.("All", :format, nil)
+          - @formats.each do |fmt|
+            = facet.(fmt, :format, fmt)
+      - if @rooms.any?
+        .flex.flex-wrap.items-center.gap-2
+          %span.text-xs.font-semibold.opacity-60.w-16 Room
+          = facet.("All", :room, nil)
+          - @rooms.each do |r|
+            = facet.(r.name, :room, r.name)
+
+  - if @sessions.any?
+    .grid.gap-4{ class: "md:grid-cols-2" }
+      - @sessions.each do |session|
+        = render "session_card", session: session
+  - else
+    .text-center.py-16.opacity-60
+      %p.text-lg No sessions match your filters.
+      = link_to "Clear filters", event_public_sessions_path(@event), class: "link link-primary"

@@ -1,0 +1,7 @@
+= simple_form_for template, url: (template.persisted? ? event_manage_email_template_path(@event, template) : event_manage_email_templates_path(@event)) do |f|
+  = f.input :name
+  = f.input :subject, hint: "Merge fields: {speaker_name}, {talk_title}, {event_name}"
+  = f.input :body, as: :text, input_html: { rows: 8 }
+  .flex.gap-2.mt-2
+    = f.button :submit, "Save template", class: "btn btn-primary"
+    = link_to "Cancel", event_manage_email_templates_path(@event), class: "btn btn-ghost"

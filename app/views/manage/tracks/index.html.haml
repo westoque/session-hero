@@ -1,0 +1,24 @@
+.max-w-3xl.flex.flex-col.gap-5
+  .flex.items-center.justify-between
+    %h1.text-2xl.font-bold Tracks
+    = link_to "Rooms →", event_manage_rooms_path(@event), class: "btn btn-ghost btn-sm"
+  %p.opacity-60.text-sm Tracks color-code sessions across the agenda and public widgets.
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      - if @tracks.any?
+        .flex.flex-col.gap-2
+          - @tracks.each do |t|
+            .flex.items-center.gap-3.border.border-base-300.rounded-box.p-2
+              %span.w-5.h-5.rounded-full{ style: "background:#{t.color}" }
+              %span.font-medium.flex-1= t.name
+              = link_to "Edit", edit_event_manage_track_path(@event, t), class: "btn btn-xs btn-ghost"
+              = button_to "Remove", event_manage_track_path(@event, t), method: :delete, class: "btn btn-xs btn-ghost text-error"
+      - else
+        %p.opacity-60.text-sm No tracks yet.
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      %h2.font-semibold.text-sm Add a track
+      = simple_form_for @track, url: event_manage_tracks_path(@event), html: { class: "flex flex-wrap items-end gap-3" } do |f|
+        = f.input :name, label: "Track name", placeholder: "AI Engineering"
+        = f.input :color, as: :string, input_html: { type: "color", value: @track.color }
+        = f.button :submit, "Add track", class: "btn btn-primary"

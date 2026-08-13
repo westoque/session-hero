@@ -1,33 +1,46 @@
-.w-full.max-w-4xl.mx-auto.flex.flex-col.gap-4
-  .flex.items-center.justify-between
-    %h1.text-2xl.font-bold= "Submissions · #{@event.name}"
-    = link_to "← Back to console", event_manage_root_path(@event), class: "btn btn-ghost btn-sm"
-  - if @submissions.any?
-    .overflow-x-auto
-      %table.table.bg-base-100.border.border-base-300.rounded-box
-        %thead
-          %tr
-            %th Title
-            %th Speaker
-            %th Status
-            %th.text-right Set status
-        %tbody
-          - @submissions.each do |s|
+.flex.flex-col.gap-4
+  .flex.items-center.justify-between.flex-wrap.gap-2
+    %h1.text-2xl.font-bold Sessions
+    = link_to "＋ New session", new_event_manage_submission_path(@event), class: "btn btn-primary btn-sm"
+  -# status filter tabs
+  .tabs.tabs-boxed.bg-base-100.border.border-base-300.w-fit
+    = link_to "All (#{@event.submissions.count})", event_manage_submissions_path(@event), class: "tab #{'tab-active' unless params[:status].present?}"
+    - %w[submitted under_review accepted rejected waitlisted].each do |st|
+      = link_to "#{st.humanize} (#{@counts[st].to_i})", event_manage_submissions_path(@event, status: st), class: "tab #{'tab-active' if params[:status] == st}"
+  = form_tag event_manage_submissions_path(@event), method: :get, class: "flex gap-2" do
+    = hidden_field_tag :status, params[:status]
+    = text_field_tag :q, params[:q], placeholder: "Search title or abstract…", class: "input input-bordered input-sm w-64"
+    = submit_tag "Search", class: "btn btn-sm btn-outline"
+
+  = form_tag bulk_status_event_manage_submissions_path(@event), method: :patch, class: "card bg-base-100 border border-base-300" do
+    .card-body.p-0
+      .overflow-x-auto
+        %table.table
+          %thead
             %tr
-              %td
-                .font-medium= s.title
-                .text-xs.opacity-60.line-clamp-1= s.abstract
-              %td
-                = s.user.email
-                - if s.speaker_profile&.name.present?
-                  .text-xs.opacity-60= s.speaker_profile.name
-              %td
-                %span.badge.badge-sm.badge-ghost= s.status.humanize
-              %td
-                = simple_form_for s, url: event_manage_submission_path(@event, s), html: { class: "flex gap-1 justify-end items-center" } do |f|
-                  = f.input :status, collection: Submission.statuses.keys.map { |k| [k.humanize, k] }, label: false, wrapper: false, input_html: { class: "select select-sm" }
-                  = f.button :submit, "Save", class: "btn btn-sm btn-primary"
-  - else
-    .card.bg-base-200.border.border-dashed.border-base-300
-      .card-body.items-center.text-center
-        %p.opacity-70 No submissions yet.
+              %th
+              %th Title
+              %th Speaker
+              %th Track
+              %th Format
+              %th Status
+              %th Content
+          %tbody
+            - @submissions.each do |s|
+              %tr
+                %td= check_box_tag "submission_ids[]", s.id, false, class: "checkbox checkbox-sm"
+                %td
+                  = link_to s.title, event_manage_submission_path(@event, s), class: "link font-medium"
+                  - if s.participants.size > 1
+                    %span.badge.badge-ghost.badge-xs.ml-1= "+#{s.participants.size - 1} co-speaker"
+                %td.text-sm= s.speaker_names.presence || s.user.email
+                %td= track_chip(s.track)
+                %td.text-sm= s.talk_format
+                %td= status_badge(s.status)
+                %td= content_status_badge(s.content_status)
+      .flex.items-center.gap-2.p-3.border-t.border-base-300.flex-wrap
+        %span.text-sm.opacity-60 With selected:
+        = select_tag :status, options_for_select(Submission.statuses.keys.map { |k| [k.humanize, k] }), class: "select select-bordered select-sm"
+        = submit_tag "Apply to selected", class: "btn btn-sm btn-primary"
+  - if @submissions.empty?
+    %p.opacity-60.text-sm.mt-4 No sessions match.

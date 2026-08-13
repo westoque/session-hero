@@ -1,0 +1,62 @@
+.max-w-5xl.flex.flex-col.gap-5
+  %h1.text-2xl.font-bold Files & Content
+  %p.opacity-60.text-sm Track speaker deliverables, review uploaded files, and approve content for publication.
+
+  -# Deliverables dashboard
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      .flex.items-center.justify-between.flex-wrap.gap-2
+        %h2.font-semibold Deliverables dashboard
+        .flex.gap-2
+          .tabs.tabs-boxed.tabs-sm
+            = link_to "All", event_manage_deliverables_path(@event), class: "tab #{'tab-active' unless @filter}"
+            = link_to "Incomplete", event_manage_deliverables_path(@event, filter: "incomplete"), class: "tab #{'tab-active' if @filter == 'incomplete'}"
+            = link_to "Complete", event_manage_deliverables_path(@event, filter: "complete"), class: "tab #{'tab-active' if @filter == 'complete'}"
+          = button_to "Remind outstanding", bulk_remind_event_manage_deliverables_path(@event), method: :post, class: "btn btn-xs btn-outline"
+      .overflow-x-auto.mt-2
+        %table.table.table-sm
+          %thead
+            %tr
+              %th Task
+              %th Speaker
+              %th Due
+              %th Status
+          %tbody
+            - @rows.each do |row|
+              %tr
+                %td.text-sm= row[:task].title
+                %td.text-sm= row[:speaker].name
+                %td.text-sm= fmt_date(row[:due_on])
+                %td= content_tag(:span, (row[:completed] ? "Complete" : "Incomplete"), class: "badge badge-xs #{row[:completed] ? 'badge-success' : 'badge-ghost'}")
+
+  -# Central files library
+  = form_tag bulk_download_event_manage_deliverables_path(@event), method: :post, class: "card bg-base-100 border border-base-300" do
+    .card-body
+      .flex.items-center.justify-between
+        %h2.font-semibold Files library
+        = submit_tag "⬇ Bulk download selected (ZIP)", class: "btn btn-xs btn-outline"
+      - if @deliverables.any?
+        .overflow-x-auto.mt-2
+          %table.table.table-sm
+            %thead
+              %tr
+                %th
+                %th File
+                %th Session
+                %th Speaker
+                %th Type
+                %th Versions
+                %th Uploaded
+            %tbody
+              - @deliverables.each do |d|
+                %tr
+                  %td= check_box_tag "deliverable_ids[]", d.id, false, class: "checkbox checkbox-xs"
+                  %td= link_to (d.latest_version&.filename || d.title), event_manage_deliverable_path(@event, d), class: "link text-sm"
+                  %td.text-sm= d.submission&.title
+                  %td.text-sm= d.event_speaker&.name
+                  %td
+                    %span.badge.badge-ghost.badge-xs= d.kind
+                  %td= d.version_count
+                  %td.text-xs= fmt_date(d.latest_version&.created_at)
+      - else
+        %p.opacity-60.text-sm.mt-2 No files uploaded yet.

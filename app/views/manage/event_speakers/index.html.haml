@@ -1,0 +1,39 @@
+.max-w-5xl.flex.flex-col.gap-4
+  .flex.items-center.justify-between.flex-wrap.gap-2
+    %h1.text-2xl.font-bold Speakers
+    .flex.gap-2
+      = link_to "Import CSV", import_event_manage_speakers_path(@event), class: "btn btn-outline btn-sm"
+      = link_to "＋ Add speaker", new_event_manage_speaker_path(@event), class: "btn btn-primary btn-sm"
+  = form_tag event_manage_speakers_path(@event), method: :get, class: "flex flex-wrap gap-2" do
+    = text_field_tag :q, params[:q], placeholder: "Search name, email, company…", class: "input input-bordered input-sm w-64"
+    = select_tag :status, options_for_select([["All statuses", ""]] + EventSpeaker::STATUSES.map { |s| [s.humanize, s] }, params[:status]), class: "select select-bordered select-sm"
+    = submit_tag "Filter", class: "btn btn-sm btn-outline"
+    - if params[:q].present? || params[:status].present?
+      = link_to "Clear", event_manage_speakers_path(@event), class: "btn btn-sm btn-ghost"
+  = form_tag bulk_status_event_manage_speakers_path(@event), method: :patch, class: "card bg-base-100 border border-base-300" do
+    .card-body.p-0.overflow-x-auto
+      %table.table
+        %thead
+          %tr
+            %th
+            %th Speaker
+            %th Title / Company
+            %th Sessions
+            %th Status
+        %tbody
+          - @speakers.each do |sp|
+            %tr
+              %td= check_box_tag "speaker_ids[]", sp.id, false, class: "checkbox checkbox-sm"
+              %td
+                .flex.items-center.gap-2
+                  = speaker_avatar(sp, size: 8)
+                  %div
+                    = link_to sp.name, event_manage_speaker_path(@event, sp), class: "link font-medium"
+                    %div.text-xs.opacity-60= sp.email
+              %td.text-sm= [sp.title, sp.company].compact.join(" · ")
+              %td.text-sm= sp.submissions.count
+              %td= content_tag(:span, sp.status.humanize, class: "badge badge-sm #{sp.status == 'confirmed' ? 'badge-success' : 'badge-ghost'}")
+    .flex.items-center.gap-2.p-3.border-t.border-base-300
+      = select_tag :status, options_for_select(EventSpeaker::STATUSES.map { |s| [s.humanize, s] }), class: "select select-bordered select-sm"
+      = submit_tag "Set status on selected", class: "btn btn-sm btn-primary"
+  %p.text-sm.opacity-60= "#{@speakers.count} speaker(s)"

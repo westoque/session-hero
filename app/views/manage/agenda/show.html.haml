@@ -1,0 +1,88 @@
+.flex.flex-col.gap-4
+  .flex.items-center.justify-between.flex-wrap.gap-2
+    %div
+      %h1.text-2xl.font-bold Agenda builder
+      %p.opacity-60.text-sm Place accepted sessions into day / time / room slots. Conflicts are flagged automatically.
+    .flex.gap-2
+      = button_to "✨ Auto-schedule", auto_schedule_event_manage_agenda_path(@event), method: :post, class: "btn btn-secondary btn-sm"
+      = button_to "Publish agenda", publish_event_manage_agenda_path(@event), method: :post, class: "btn btn-primary btn-sm"
+      = link_to "View public agenda", event_public_agenda_path(@event), class: "btn btn-ghost btn-sm", target: "_blank"
+
+  - if @conflicts.any?
+    .alert.alert-warning.flex-col.items-start
+      %span.font-semibold= "⚠ #{@conflicts.size} scheduling conflict(s)"
+      %ul.text-sm.list-disc.ml-5
+        - @conflicts.each do |c|
+          %li
+            - if c[:kind] == "room"
+              = "Room clash in #{c[:a].room&.name}: “#{c[:a].title}” & “#{c[:b].title}”"
+            - else
+              = "Speaker double-booked: “#{c[:a].title}” & “#{c[:b].title}”"
+
+  -# Day tabs
+  .tabs.tabs-boxed.bg-base-100.border.border-base-300.w-fit
+    - @days.each_with_index do |d, i|
+      = link_to d.strftime("%a %b %-d"), event_manage_agenda_path(@event, day: i), class: "tab #{'tab-active' if i == @day_index}"
+
+  -# Grid: rooms as columns, hours as rows
+  - blocks = @scheduled.select { |s| s.starts_at && s.starts_at.to_date == @day }.group_by { |s| [s.starts_at.hour, s.room_id] }
+  .overflow-x-auto.card.bg-base-100.border.border-base-300
+    %table.table.table-sm.min-w-max
+      %thead
+        %tr
+          %th.w-16 Time
+          - @rooms.each do |room|
+            %th.text-center= room.name
+      %tbody
+        - @hours.each do |h|
+          %tr
+            %td.font-mono.text-xs.opacity-60= "#{h % 12 == 0 ? 12 : h % 12}#{h < 12 ? 'am' : 'pm'}"
+            - @rooms.each do |room|
+              %td.align-top{ style: "min-width:9rem" }
+                - Array(blocks[[h, room.id]]).each do |s|
+                  - conflicted = s.conflicts?
+                  %div.rounded.p-1.text-xs.text-white.mb-1{ style: "background:#{s.track&.color || '#42506b'}" }
+                    %div.font-semibold.leading-tight= s.title
+                    %div.opacity-90= s.time_range
+                    - if conflicted
+                      %span.badge.badge-error.badge-xs mt-1 ⚠ conflict
+
+  .grid.grid-cols-1.gap-4{ class: "lg:grid-cols-2" }
+    -# Unscheduled pool
+    .card.bg-base-100.border.border-base-300
+      .card-body
+        %h2.font-semibold.text-sm.opacity-60= "Unscheduled sessions (#{@unscheduled.size})"
+        - if @unscheduled.any?
+          .flex.flex-col.gap-2.mt-1
+            - @unscheduled.each do |s|
+              .border.border-base-300.rounded-box.p-2
+                .flex.items-center.gap-2
+                  = track_chip(s.track)
+                  %span.text-sm.font-medium= s.title
+                = form_tag place_event_manage_agenda_path(@event), method: :post, class: "flex flex-wrap items-end gap-1 mt-1" do
+                  = hidden_field_tag :submission_id, s.id
+                  = select_tag :day, options_for_select(@days.each_with_index.map { |d, i| [d.strftime("%a %-d"), i] }, @day_index), class: "select select-bordered select-xs"
+                  = select_tag :hour, options_for_select(@hours.map { |h| ["#{h}:00", h] }, 10), class: "select select-bordered select-xs"
+                  = select_tag :room_id, options_from_collection_for_select(@rooms, :id, :name), class: "select select-bordered select-xs"
+                  = submit_tag "Place", class: "btn btn-xs btn-primary"
+        - else
+          %p.opacity-60.text-sm All accepted sessions are scheduled.
+
+    -# Scheduled list (move / unschedule)
+    .card.bg-base-100.border.border-base-300
+      .card-body
+        %h2.font-semibold.text-sm.opacity-60= "Scheduled (#{@scheduled.size})"
+        .flex.flex-col.gap-2.mt-1
+          - @scheduled.each do |s|
+            .border.border-base-300.rounded-box.p-2
+              .flex.items-center.justify-between.gap-2
+                %div
+                  %span.text-sm.font-medium= s.title
+                  %div.text-xs.opacity-60= "#{s.starts_at&.strftime('%a %-d')} · #{s.time_range} · #{s.room&.name}"
+                = button_to "Unschedule", place_event_manage_agenda_path(@event, submission_id: s.id, unschedule: 1), method: :post, class: "btn btn-xs btn-ghost text-error"
+              = form_tag place_event_manage_agenda_path(@event), method: :post, class: "flex flex-wrap items-end gap-1 mt-1" do
+                = hidden_field_tag :submission_id, s.id
+                = select_tag :day, options_for_select(@days.each_with_index.map { |d, i| [d.strftime("%a %-d"), i] }, @days.index(s.starts_at&.to_date) || 0), class: "select select-bordered select-xs"
+                = select_tag :hour, options_for_select(@hours.map { |h| ["#{h}:00", h] }, s.starts_at&.hour || 10), class: "select select-bordered select-xs"
+                = select_tag :room_id, options_from_collection_for_select(@rooms, :id, :name, s.room_id), class: "select select-bordered select-xs"
+                = submit_tag "Move", class: "btn btn-xs btn-outline"

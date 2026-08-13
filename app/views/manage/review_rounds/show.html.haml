@@ -1,0 +1,110 @@
+- r = @round
+.max-w-5xl.flex.flex-col.gap-5
+  .flex.items-center.justify-between.flex-wrap.gap-2
+    %div
+      = link_to "← Evaluation", event_manage_review_rounds_path(@event), class: "text-sm link"
+      %h1.text-2xl.font-bold= r.name
+      .flex.gap-2.mt-1
+        - if r.anonymized
+          %span.badge.badge-info.badge-sm Blind review
+        %span.badge.badge-ghost.badge-sm= "#{fmt_date(r.opens_at)} – #{fmt_date(r.closes_at)}"
+    .flex.gap-2
+      = link_to "Edit", edit_event_manage_review_round_path(@event, r), class: "btn btn-sm btn-outline"
+      = link_to "Results", results_event_manage_review_rounds_path(@event, round: r.id), class: "btn btn-sm btn-primary"
+
+  .grid.grid-cols-1.gap-5{ class: "lg:grid-cols-2" }
+    -# Scorecard
+    .card.bg-base-100.border.border-base-300
+      .card-body
+        %h2.font-semibold.text-sm.opacity-60 Scorecard
+        %ul.mt-1.flex.flex-col.gap-1
+          - r.review_criteria.each do |c|
+            %li.text-sm.flex.items-center.gap-2
+              %span.font-medium= c.label
+              %span.badge.badge-ghost.badge-xs= c.kind
+              - if c.kind == "number"
+                %span.opacity-60= "1–#{c.max_value} · weight #{c.weight}"
+              - if c.option_list.any?
+                %span.opacity-60= c.option_list.join(", ")
+
+    -# Reviewer pool
+    .card.bg-base-100.border.border-base-300
+      .card-body
+        %h2.font-semibold.text-sm.opacity-60 Reviewer pool (this round)
+        - if r.reviewers.any?
+          .flex.flex-col.gap-1.mt-1
+            - r.reviewers.each do |rev|
+              .flex.items-center.justify-between.text-sm
+                %span= rev.display_name
+                = button_to "Remove", remove_reviewer_event_manage_review_round_path(@event, r, user_id: rev.id), method: :delete, class: "btn btn-xs btn-ghost text-error"
+        - else
+          %p.opacity-60.text-sm.mt-1 No reviewers in this round's pool yet.
+        .divider.my-2
+        = form_tag add_reviewer_event_manage_review_round_path(@event, r), method: :post, class: "flex flex-col gap-2" do
+          - if @candidate_reviewers.any?
+            = select_tag :user_id, options_from_collection_for_select(@candidate_reviewers, :id, :email), include_blank: "— existing reviewer —", class: "select select-bordered select-sm"
+          .flex.gap-2
+            = text_field_tag :email, nil, placeholder: "invite reviewer by email", class: "input input-bordered input-sm flex-1"
+            = submit_tag "Add", class: "btn btn-sm btn-primary"
+
+  -# Progress dashboard
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      .flex.items-center.justify-between
+        %h2.font-semibold.text-sm.opacity-60 Reviewer progress
+        = button_to "Send reminder to laggards", remind_event_manage_review_round_path(@event, r), method: :post, class: "btn btn-xs btn-outline"
+      .overflow-x-auto.mt-2
+        %table.table.table-sm
+          %thead
+            %tr
+              %th Reviewer
+              %th Assigned
+              %th Completed
+              %th Progress
+          %tbody
+            - @progress.each do |rev, assigned, completed|
+              %tr
+                %td= rev.display_name
+                %td= assigned
+                %td= completed
+                %td
+                  - pct = assigned.zero? ? 0 : (completed * 100 / assigned)
+                  %progress.progress.progress-primary.w-24{ value: pct, max: 100 }
+                  %span.text-xs.ml-1= "#{pct}%"
+
+  -# Assignment tooling
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      %h2.font-semibold.text-sm.opacity-60 Assign submissions
+      -# Auto-distribute
+      = form_tag assign_event_manage_review_round_path(@event, r), method: :post, class: "flex flex-wrap items-end gap-2 mt-2 pb-3 border-b border-base-200" do
+        = hidden_field_tag :auto, "1"
+        %div
+          %label.text-xs.opacity-60 Track filter
+          = select_tag :track_id, options_from_collection_for_select(@event.tracks, :id, :name), include_blank: "All tracks", class: "select select-bordered select-sm"
+        %div
+          %label.text-xs.opacity-60 Per-reviewer cap
+          = number_field_tag :cap, 5, min: 1, class: "input input-bordered input-sm w-20"
+        = submit_tag "Auto-distribute across pool", class: "btn btn-sm btn-secondary"
+      -# Manual assign
+      = form_tag assign_event_manage_review_round_path(@event, r), method: :post, class: "mt-3" do
+        .flex.items-center.gap-2.mb-2
+          %label.text-xs.opacity-60 Assign selected to:
+          = select_tag :user_id, options_from_collection_for_select(r.reviewers, :id, :display_name), include_blank: "— reviewer —", class: "select select-bordered select-sm"
+          = submit_tag "Assign selected", class: "btn btn-sm btn-primary"
+        .overflow-x-auto
+          %table.table.table-sm
+            %thead
+              %tr
+                %th
+                %th Title
+                %th Track
+                %th Assigned to
+            %tbody
+              - @submissions.each do |s|
+                - assignees = @assignments.select { |a| a.submission_id == s.id }.map { |a| a.user.display_name }
+                %tr
+                  %td= check_box_tag "submission_ids[]", s.id, false, class: "checkbox checkbox-sm"
+                  %td.text-sm= s.title
+                  %td= track_chip(s.track)
+                  %td.text-xs.opacity-70= assignees.join(", ")

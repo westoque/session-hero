@@ -1,0 +1,41 @@
+- d = @deliverable
+.max-w-3xl.flex.flex-col.gap-5
+  %div
+    = link_to "← Files library", event_manage_deliverables_path(@event), class: "link text-sm"
+    %h1.text-2xl.font-bold= d.latest_version&.filename || d.title
+    %p.opacity-60.text-sm= "#{d.submission&.title} · #{d.event_speaker&.name} · #{d.kind}"
+
+  .flex.gap-2
+    = button_to "Approve content", approve_event_manage_deliverable_path(@event, d, status: "approved"), method: :post, class: "btn btn-sm btn-success"
+    = button_to "Mark in review", approve_event_manage_deliverable_path(@event, d, status: "in_review"), method: :post, class: "btn btn-sm btn-outline"
+    - if d.submission
+      %span.self-center= content_status_badge(d.submission.content_status)
+
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      %h2.font-semibold.text-sm.opacity-60 Versions
+      %ul.mt-1.flex.flex-col.gap-1
+        - @versions.reverse.each do |v|
+          %li.flex.items-center.justify-between.text-sm.border-b.border-base-200.py-1
+            %div
+              %span.font-medium= "v#{v.version_number}"
+              - if v.latest?
+                %span.badge.badge-success.badge-xs latest
+              %span.opacity-60.ml-2= v.filename
+              %span.opacity-40.text-xs.ml-2= fmt_datetime(v.created_at)
+            - if v.file.attached?
+              = link_to "Download", rails_blob_path(v.file, disposition: "attachment"), class: "btn btn-xs btn-ghost"
+
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      %h2.font-semibold.text-sm.opacity-60 Comments
+      .flex.flex-col.gap-2.mt-1
+        - @comments.each do |c|
+          .border.border-base-300.rounded-box.p-2
+            .flex.items-center.gap-2.text-xs.opacity-60
+              %span.font-medium= c.display_author
+              %span= fmt_datetime(c.created_at)
+            %p.text-sm= c.body
+      = form_tag comment_event_manage_deliverable_path(@event, d), method: :post, class: "flex gap-2 mt-2" do
+        = text_field_tag :body, nil, placeholder: "Reply to the speaker…", class: "input input-bordered input-sm flex-1", required: true
+        = submit_tag "Post", class: "btn btn-sm btn-primary"

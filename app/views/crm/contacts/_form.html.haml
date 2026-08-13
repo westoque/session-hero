@@ -1,0 +1,14 @@
+= simple_form_for contact, url: (contact.persisted? ? crm_contact_path(contact) : crm_contacts_path) do |f|
+  = f.error_notification
+  .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2" }
+    = f.input :name, autofocus: true
+    = f.input :email
+  .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2" }
+    = f.input :company
+    = f.input :job_title, label: "Job title"
+  = f.input :speaker_type, label: "Speaker type", collection: %w[Internal External], include_blank: "Unspecified"
+  = f.input :tags, label: "Tags (comma-separated)", as: :string, input_html: { value: contact.tag_list.join(", ") }
+  = f.input :bio, input_html: { rows: 4 }
+  .mt-6.flex.gap-2
+    = f.button :submit, (contact.persisted? ? "Save changes" : "Create contact"), class: "btn btn-primary"
+    = link_to "Cancel", (contact.persisted? ? crm_contact_path(contact) : crm_contacts_path), class: "btn btn-ghost"

@@ -1,0 +1,40 @@
+.max-w-5xl.flex.flex-col.gap-5
+  .flex.items-center.justify-between.flex-wrap.gap-2
+    %h1.text-2xl.font-bold Speaker Tasks
+    = link_to "＋ New task", new_event_manage_portal_task_path(@event), class: "btn btn-primary btn-sm"
+  %p.opacity-60.text-sm Assign onboarding tasks to speakers and track completion. See per-speaker status without opening each record.
+  - if @tasks.any?
+    .card.bg-base-100.border.border-base-300
+      .card-body.p-0.overflow-x-auto
+        %table.table
+          %thead
+            %tr
+              %th Task
+              %th Due
+              %th Type
+              %th Completion
+              - @speakers.each do |sp|
+                %th.text-center.text-xs= sp.name.split.first
+          %tbody
+            - @tasks.each do |task|
+              %tr
+                %td
+                  = link_to task.title, edit_event_manage_portal_task_path(@event, task), class: "link font-medium"
+                  - if task.required
+                    %span.text-error *
+                %td.text-sm= fmt_date(task.due_on)
+                %td
+                  %span.badge.badge-ghost.badge-xs= task.task_type.humanize
+                %td.text-sm= "#{task.completed_count}/#{task.total_count}"
+                - @speakers.each do |sp|
+                  - ta = task.task_assignments.find { |a| a.event_speaker_id == sp.id }
+                  %td.text-center
+                    - if ta
+                      = button_to (ta.completed? ? "✓" : "○"), toggle_event_manage_portal_task_path(@event, task, assignment_id: ta.id), method: :patch, class: "btn btn-xs #{ta.completed? ? 'btn-success' : 'btn-ghost'}"
+                    - else
+                      %span.opacity-30 —
+  - else
+    .card.bg-base-200.border.border-dashed.border-base-300
+      .card-body.items-center.text-center
+        %p.opacity-60 No tasks yet.
+        = link_to "Create a task", new_event_manage_portal_task_path(@event), class: "btn btn-primary btn-sm mt-1"

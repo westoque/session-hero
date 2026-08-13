@@ -1,0 +1,21 @@
+.max-w-3xl.flex.flex-col.gap-4
+  %h1.text-2xl.font-bold New evaluation round
+  = simple_form_for @round, url: event_manage_review_rounds_path(@event) do |f|
+    = f.error_notification
+    .card.bg-base-100.border.border-base-300
+      .card-body.gap-3
+        = f.input :name, placeholder: "Round 1 · Initial Review"
+        = f.input :instructions, as: :text, input_html: { rows: 2 }, hint: "Scoring guidance shown to reviewers."
+        .grid.grid-cols-1.gap-3{ class: "md:grid-cols-2" }
+          = f.input :opens_at, as: :string, input_html: { type: "datetime-local" }
+          = f.input :closes_at, as: :string, input_html: { type: "datetime-local" }
+        = f.input :anonymized, as: :boolean, label: "Blind review (hide speaker identity from reviewers)"
+    .card.bg-base-100.border.border-base-300
+      .card-body
+        %h2.font-semibold.text-sm.mb-1 Scorecard
+        %p.text-xs.opacity-60.mb-2 Numeric criteria (1–max) contribute to the weighted average. Add a dropdown for a recommendation and a text criterion for comments.
+        = f.simple_fields_for :review_criteria do |ff|
+          = render "criteria_fields", ff: ff
+    .flex.gap-2
+      = f.button :submit, "Create round", class: "btn btn-primary"
+      = link_to "Cancel", event_manage_review_rounds_path(@event), class: "btn btn-ghost"

@@ -1,0 +1,87 @@
+- content_for(:title, "Speaker Portal")
+- speaker = current_speakers.first
+.w-full.max-w-4xl.mx-auto.flex.flex-col.gap-6
+  .flex.items-center.gap-4
+    = speaker_avatar(speaker, size: 16)
+    .flex.flex-col.gap-1
+      %h1.text-3xl.font-bold= "Welcome, #{speaker.name.split.first}!"
+      %p.opacity-70
+        - if speaker.title.present? || speaker.company.present?
+          = [speaker.title, speaker.company].compact_blank.join(" · ")
+      %span.badge.badge-secondary.badge-sm Speaker view
+
+  - if @invitations.any?
+    .card.bg-warning.text-warning-content.shadow-md
+      .card-body
+        %h2.card-title Pending invitations
+        %p.text-sm You've been invited to speak. Confirm to lock in your spot.
+        - @invitations.each do |inv|
+          .flex.items-center.justify-between.bg-base-100.text-base-content.rounded-lg.p-3.mt-2
+            %span.font-medium= inv.event.name
+            = button_to "Accept invitation", portal_invitation_path(inv), method: :patch, class: "btn btn-primary btn-sm"
+
+  / Stats
+  .stats.shadow.bg-base-100.border.border-base-300.w-full{ class: "stats-vertical sm:stats-horizontal" }
+    .stat
+      .stat-title My Sessions
+      .stat-value.text-primary= @sessions.size
+    .stat
+      .stat-title Tasks Complete
+      .stat-value= "#{@tasks_done} of #{@tasks_total}"
+      .stat-desc
+        - if @tasks_total.positive?
+          = "#{((@tasks_done.to_f / @tasks_total) * 100).round}% done"
+        - else
+          No tasks assigned
+
+  .grid.grid-cols-1.gap-6{ class: "lg:grid-cols-2" }
+    / My sessions
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        .flex.items-center.justify-between
+          %h2.card-title My Sessions
+          = link_to "View all", portal_sessions_path, class: "btn btn-ghost btn-sm"
+        - if @sessions.any?
+          .flex.flex-col.gap-2.mt-2
+            - @sessions.each do |s|
+              = link_to portal_session_path(s), class: "block rounded-lg border border-base-300 p-3 hover:bg-base-200" do
+                .flex.items-start.justify-between.gap-2
+                  %span.font-medium= s.title
+                  = content_status_badge(s.content_status)
+                .flex.gap-2.mt-1.items-center
+                  - if s.track
+                    = track_chip(s.track)
+                  - if s.talk_format.present?
+                    %span.text-xs.opacity-60= s.talk_format
+        - else
+          %p.opacity-70.mt-2 No sessions yet.
+
+    / My tasks
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        .flex.items-center.justify-between
+          %h2.card-title My Tasks
+          = link_to "View all", portal_tasks_path, class: "btn btn-ghost btn-sm"
+        - open_tasks = @assignments.reject(&:completed?)
+        - if open_tasks.any?
+          .flex.flex-col.gap-2.mt-2
+            - open_tasks.first(5).each do |a|
+              .flex.items-center.justify-between.rounded-lg.border.border-base-300.p-3
+                .flex.flex-col
+                  %span.font-medium
+                    = a.portal_task.title
+                    - if a.portal_task.required
+                      %span.text-error *
+                  - if a.portal_task.due_on
+                    %span.text-xs.opacity-60= "Due #{fmt_date(a.portal_task.due_on)}"
+                %span.badge.badge-warning.badge-sm Incomplete
+        - else
+          %p.opacity-70.mt-2 All caught up — nothing outstanding. 🎉
+
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      %h2.card-title Quick links
+      .flex.flex-wrap.gap-2.mt-2
+        = link_to "My Sessions", portal_sessions_path, class: "btn btn-outline btn-sm"
+        = link_to "My Tasks", portal_tasks_path, class: "btn btn-outline btn-sm"
+        = link_to "Edit Profile", edit_portal_profile_path, class: "btn btn-outline btn-sm"

@@ -1,0 +1,43 @@
+- content_for(:title, @event.name)
+.flex.flex-col.gap-8
+  / ── Hero ──
+  .hero.bg-base-100.rounded-2xl.border.border-base-300.shadow-sm
+    .hero-content.text-center.py-12
+      .max-w-2xl.flex.flex-col.gap-4
+        %h1.text-4xl.font-bold{ class: "sm:text-5xl" }= @event.name
+        - if @event.tagline.present?
+          %p.text-xl.opacity-80= @event.tagline
+        .flex.flex-wrap.justify-center.gap-3.text-sm.opacity-70
+          - if @event.date_range
+            %span.badge.badge-lg.badge-ghost ▤ #{@event.date_range}
+          - if @event.location.present?
+            %span.badge.badge-lg.badge-ghost ⌂ #{@event.location}
+        - if @event.description.present?
+          %p.opacity-70.mt-2= @event.description
+        .flex.flex-wrap.justify-center.gap-2.mt-2
+          = link_to "View sessions", event_public_sessions_path(@event), class: "btn btn-primary"
+          = link_to "See the agenda", event_public_agenda_path(@event), class: "btn btn-outline"
+          - if @event.website_url.present?
+            = link_to "Event website", @event.website_url, class: "btn btn-ghost", target: "_blank", rel: "noopener"
+
+  / ── Stats ──
+  .stats.shadow.bg-base-100.border.border-base-300.w-full{ class: "stats-vertical sm:stats-horizontal" }
+    .stat
+      .stat-title Sessions
+      .stat-value.text-primary= @session_count
+    .stat
+      .stat-title Speakers
+      .stat-value= @speaker_count
+    .stat
+      .stat-title Days
+      .stat-value= @event.agenda_days.size
+
+  / ── Widget links ──
+  .grid.gap-4{ class: "sm:grid-cols-2 lg:grid-cols-3" }
+    - cards = [["Sessions", "Browse and search the full talk lineup.", event_public_sessions_path(@event)], ["Speakers", "Meet the people taking the stage.", event_public_speakers_path(@event)], ["Agenda", "The per-day, per-room schedule grid.", event_public_agenda_path(@event)], ["My Itinerary", "Build a personal schedule and export to calendar.", event_public_itinerary_path(@event)], ["Speaker Gallery", "A visual directory of every speaker.", event_public_gallery_path(@event)]]
+    - cards.each do |title, desc, path|
+      = link_to path, class: "card bg-base-100 shadow-sm border border-base-300 hover:shadow-md hover:border-primary transition" do
+        .card-body
+          %h2.card-title= title
+          %p.text-sm.opacity-70= desc
+          %span.text-primary.text-sm.font-medium.mt-1 Open →

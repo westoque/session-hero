@@ -1,0 +1,133 @@
+.w-full.max-w-6xl.mx-auto.flex.flex-col.gap-6
+  .flex.items-center.justify-between.flex-wrap.gap-2
+    .flex.flex-col.gap-1
+      %h1.text-3xl.font-bold Directory
+      %span.text-sm.opacity-70
+        Cross-event speaker directory ·
+        %span.font-semibold= @contacts.size
+        contact(s)
+    .flex.gap-2
+      = link_to "Import CSV", import_crm_contacts_path, class: "btn btn-ghost btn-sm"
+      = link_to "Segments", crm_segments_path, class: "btn btn-ghost btn-sm"
+      = link_to "New contact", new_crm_contact_path, class: "btn btn-primary btn-sm"
+
+  / Search + filters
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      = form_with url: crm_contacts_path, method: :get, class: "flex flex-col gap-4" do
+        .grid.grid-cols-1.gap-3{ class: "md:grid-cols-4" }
+          %label.form-control
+            .label
+              %span.label-text Search
+            %input.input.input-bordered{ type: "text", name: "q", value: params[:q], placeholder: "name, email, company" }
+          %label.form-control
+            .label
+              %span.label-text Company
+            %select.select.select-bordered{ name: "company" }
+              %option{ value: "" } Any company
+              - @companies.each do |co|
+                %option{ value: co, selected: params[:company] == co }= co
+          %label.form-control
+            .label
+              %span.label-text Speaker type
+            %select.select.select-bordered{ name: "speaker_type" }
+              %option{ value: "" } Any type
+              - @speaker_types.each do |st|
+                %option{ value: st, selected: params[:speaker_type] == st }= st
+          %label.form-control
+            .label
+              %span.label-text Tag
+            %select.select.select-bordered{ name: "tag" }
+              %option{ value: "" } Any tag
+              - @all_tags.each do |tg|
+                %option{ value: tg, selected: params[:tag] == tg }= tg
+        .flex.gap-2
+          %button.btn.btn-primary.btn-sm{ type: "submit" } Apply filters
+          = link_to "Clear", crm_contacts_path, class: "btn btn-ghost btn-sm"
+
+      - if @filters.any?
+        .flex.flex-wrap.items-center.gap-2.mt-4
+          %span.text-sm.opacity-70 Active:
+          - @filters.each do |key, value|
+            .badge.badge-primary.gap-1
+              %span= "#{key}: #{value}"
+              = link_to "✕", crm_contacts_path(@filters.except(key)), class: "font-bold"
+          = link_to "Clear all", crm_contacts_path, class: "link link-hover text-sm"
+
+        / Save current filter as a segment
+        = form_with url: crm_segments_path, method: :post, class: "flex flex-wrap items-end gap-2 mt-3" do
+          - @filters.each do |key, value|
+            = hidden_field_tag "criteria[#{key}]", value
+          %label.form-control
+            .label
+              %span.label-text Save these filters as a segment
+            %input.input.input-bordered.input-sm{ type: "text", name: "name", placeholder: "Segment name", required: true }
+          %button.btn.btn-secondary.btn-sm{ type: "submit" } Save as segment
+
+  / Directory table + bulk email
+  = form_with url: bulk_email_crm_contacts_path, method: :post, id: "bulk-email-form" do
+    .flex.items-center.justify-between.mb-2
+      %button.btn.btn-primary.btn-sm{ type: "button", onclick: "document.getElementById('bulk_email_modal').showModal()" } Email selected
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body.p-0
+        .overflow-x-auto
+          %table.table
+            %thead
+              %tr
+                %th
+                %th Name
+                %th Email
+                %th Company
+                %th Title
+                %th Tags
+                %th Type
+                %th Stage
+            %tbody
+              - if @contacts.any?
+                - @contacts.each do |c|
+                  %tr.hover
+                    %td
+                      %input.checkbox.checkbox-sm{ type: "checkbox", name: "contact_ids[]", value: c.id }
+                    %td
+                      = link_to c.name, crm_contact_path(c), class: "link link-hover font-medium"
+                    %td.text-sm= c.email
+                    %td.text-sm= c.company
+                    %td.text-sm= c.job_title
+                    %td
+                      .flex.flex-wrap.gap-1
+                        - c.tag_list.each do |t|
+                          %span.badge.badge-ghost.badge-sm= t
+                    %td
+                      - if c.speaker_type.present?
+                        %span.badge.badge-outline.badge-sm= c.speaker_type
+                    %td
+                      - if c.enrolled?
+                        %span.badge.badge-primary.badge-sm= c.pipeline_stage
+                      - else
+                        %span.opacity-40.text-xs —
+              - else
+                %tr
+                  %td.text-center.opacity-70.py-8{ colspan: 8 } No contacts match your filters.
+
+    / Bulk email compose modal
+    %dialog#bulk_email_modal.modal
+      .modal-box
+        %h3.font-bold.text-lg Email selected contacts
+        %p.text-sm.opacity-70.mt-1
+          Uses the checked rows. Merge tags:
+          %code {{first_name}}
+          %code {{name}}
+          %code {{company}}
+        .form-control.mt-3
+          .label
+            %span.label-text Subject
+          %input.input.input-bordered{ type: "text", name: "subject", placeholder: "Hi {{first_name}}" }
+        .form-control.mt-2
+          .label
+            %span.label-text Body
+          %textarea.textarea.textarea-bordered{ name: "body", rows: 5, placeholder: "Hi {{first_name}}, ..." }
+        .modal-action
+          %button.btn.btn-primary{ type: "submit" } Send &amp; log
+          %button.btn.btn-ghost{ type: "button", onclick: "document.getElementById('bulk_email_modal').close()" } Cancel
+      %form.modal-backdrop{ method: "dialog" }
+        %button close

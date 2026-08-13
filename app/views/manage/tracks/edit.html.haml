@@ -1,0 +1,8 @@
+.max-w-md.flex.flex-col.gap-4
+  %h1.text-xl.font-bold Edit track
+  = simple_form_for @track, url: event_manage_track_path(@event, @track), method: :patch do |f|
+    = f.input :name
+    = f.input :color, as: :string, input_html: { type: "color" }
+    .flex.gap-2.mt-2
+      = f.button :submit, "Save", class: "btn btn-primary"
+      = link_to "Cancel", event_manage_tracks_path(@event), class: "btn btn-ghost"

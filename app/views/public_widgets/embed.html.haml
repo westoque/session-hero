@@ -1,0 +1,13 @@
+!!!
+%html{ "data-theme": "facebook" }
+  %head
+    %meta{ "http-equiv": "Content-Type", content: "text/html; charset=UTF-8" }/
+    %title= "#{@event.name} — #{@widget.titleize}"
+    %meta{ name: "viewport", content: "width=device-width,initial-scale=1" }/
+    = csrf_meta_tags
+    = csp_meta_tag
+    %link{ href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap", rel: "stylesheet" }/
+    = stylesheet_link_tag :app, "data-turbo-track": "reload"
+    = javascript_importmap_tags
+  %body.bg-base-100.p-4
+    = render template: "public_widgets/#{@widget}"

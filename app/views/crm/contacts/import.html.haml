@@ -1,0 +1,14 @@
+.w-full.max-w-2xl.mx-auto.flex.flex-col.gap-6
+  .flex.items-center.justify-between
+    %h1.text-3xl.font-bold Import contacts
+    = link_to "Back to directory", crm_contacts_path, class: "btn btn-ghost btn-sm"
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      %p.text-sm.opacity-70
+        Upload a CSV with columns:
+        %code name, email, title, company, bio
+        \. Existing contacts (matched by email) are skipped.
+      = form_with url: import_crm_contacts_path, method: :post, multipart: true, class: "flex flex-col gap-4 mt-2" do
+        %input.file-input.file-input-bordered.w-full{ type: "file", name: "file", accept: ".csv", required: true }
+        %div
+          %button.btn.btn-primary{ type: "submit" } Import CSV

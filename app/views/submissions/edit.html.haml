@@ -1,12 +1,21 @@
 .w-full.max-w-xl.mx-auto.flex.flex-col.gap-4
   %h1.text-2xl.font-bold Edit submission
-  .card.bg-base-100.shadow-md.border.border-base-300
-    .card-body
-      = simple_form_for @submission, url: event_submission_path(@event, @submission) do |f|
-        = f.error_notification
-        = f.input :title, label: "Talk title"
-        = f.input :abstract, label: "Abstract", input_html: { rows: 5 }
-        = f.input :talk_format, label: "Format"
-        .mt-4.flex.gap-2
-          = f.button :submit, "Save changes", class: "btn btn-primary"
-          = link_to "Cancel", event_submissions_path(@event), class: "btn btn-ghost"
+  - if @locked
+    .alert.alert-warning
+      %span The call for papers has closed. This submission is now read-only.
+    = link_to "Back", event_submission_path(@event, @submission), class: "btn btn-ghost btn-sm w-fit"
+  - else
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        = simple_form_for @submission, url: event_submission_path(@event, @submission) do |f|
+          = f.error_notification
+          = f.input :title, label: "Talk title"
+          = f.input :abstract, label: "Abstract", input_html: { rows: 6 }
+          .grid.grid-cols-1.gap-4{ class: "sm:grid-cols-2" }
+            = f.input :talk_format, label: "Format", collection: @event.formats, include_blank: "Choose…"
+            = f.association :track, collection: @event.tracks, include_blank: "Choose track…"
+            = f.input :audience_level, collection: ["Beginner", "Intermediate", "Advanced"], include_blank: "—"
+            = f.input :key_takeaway
+          .mt-4.flex.gap-2
+            = f.button :submit, "Save changes", class: "btn btn-primary"
+            = link_to "Cancel", event_submissions_path(@event), class: "btn btn-ghost"

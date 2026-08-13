@@ -1,4 +1,5 @@
 class Manage::BaseController < ApplicationController
+  layout "manage"
   before_action :authenticate_user!
   before_action :set_event
   before_action :require_organizer!

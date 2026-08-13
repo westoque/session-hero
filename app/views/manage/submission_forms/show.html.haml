@@ -1,0 +1,56 @@
+- form = @form
+.max-w-3xl.flex.flex-col.gap-5
+  .flex.items-center.justify-between.flex-wrap.gap-2
+    %div
+      = link_to "← All forms", event_manage_submission_forms_path(@event), class: "text-sm link"
+      %h1.text-2xl.font-bold= form.name.presence || "Submission Form"
+    .flex.gap-2
+      = link_to "Form settings", edit_event_manage_submission_form_path(@event, form), class: "btn btn-sm btn-outline"
+      = link_to "View public form", event_submit_path(@event), class: "btn btn-sm btn-primary", target: "_blank"
+
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      %h2.font-semibold.text-sm.opacity-60 Locked questions (always on the form)
+      %ul.text-sm.list-disc.ml-5.mt-1
+        %li Session title %span.badge.badge-ghost.badge-xs required
+        %li Abstract / description %span.badge.badge-ghost.badge-xs required
+        %li Session format %li Track %li Speaker name & email
+
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      %h2.font-semibold.text-sm.opacity-60.mb-2 Custom questions
+      - if form.form_fields.any?
+        .flex.flex-col.gap-2
+          - form.form_fields.each do |field|
+            .border.border-base-300.rounded-box.p-3
+              .flex.items-center.justify-between.flex-wrap.gap-2
+                %div
+                  %span.font-medium= field.label
+                  - if field.required
+                    %span.text-error *
+                  %span.badge.badge-ghost.badge-xs.ml-1= field.field_type.humanize
+                  - if field.conditional_value.present?
+                    %span.badge.badge-info.badge-xs.ml-1= "shows when format = #{field.conditional_value}"
+                = button_to "Remove", event_manage_submission_form_form_field_path(@event, form, field), method: :delete, class: "btn btn-xs btn-ghost text-error"
+              - if field.help_text.present?
+                %p.text-xs.opacity-60= field.help_text
+              - if field.option_list.any?
+                %p.text-xs.opacity-60= "Options: #{field.option_list.join(', ')}"
+      - else
+        %p.opacity-60.text-sm No custom questions yet.
+
+  .card.bg-base-200.border.border-base-300
+    .card-body
+      %h2.font-semibold.text-sm.mb-1 Add a question
+      = form_tag event_manage_submission_form_form_fields_path(@event, form), method: :post, class: "flex flex-col gap-3" do
+        .grid.grid-cols-1.gap-3{ class: "md:grid-cols-2" }
+          = text_field_tag "form_field[label]", nil, placeholder: "Question label (e.g. Key takeaway)", class: "input input-bordered", required: true
+          = select_tag "form_field[field_type]", options_for_select(FormField::FIELD_TYPES.map { |t| [t.humanize, t] }), class: "select select-bordered"
+        = text_field_tag "form_field[help_text]", nil, placeholder: "Help text (optional)", class: "input input-bordered"
+        = text_area_tag "form_field[options_text]", nil, placeholder: "Dropdown/checkbox options — one per line", class: "textarea textarea-bordered", rows: 2
+        .grid.grid-cols-1.gap-3{ class: "md:grid-cols-2" }
+          %label.label.cursor-pointer.gap-2.justify-start
+            = check_box_tag "form_field[required]", "1", false, class: "checkbox checkbox-sm"
+            %span.label-text Required
+          = text_field_tag "form_field[conditional_value]", nil, placeholder: "Show only when format = … (optional)", class: "input input-bordered"
+        = submit_tag "Add question", class: "btn btn-primary w-fit"

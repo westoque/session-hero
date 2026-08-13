@@ -1,0 +1,10 @@
+.max-w-xl.flex.flex-col.gap-4
+  %h1.text-2xl.font-bold Create submission form
+  = simple_form_for @form, url: event_manage_submission_forms_path(@event) do |f|
+    = f.input :name, label: "Internal name", placeholder: "Session Submission Form"
+    = f.input :title, label: "Public title"
+    = f.input :welcome_message, as: :text, input_html: { rows: 3 }
+    = f.input :closes_at, as: :string, input_html: { type: "datetime-local" }, label: "Close date"
+    .flex.gap-2.mt-2
+      = f.button :submit, "Create form", class: "btn btn-primary"
+      = link_to "Cancel", event_manage_submission_forms_path(@event), class: "btn btn-ghost"

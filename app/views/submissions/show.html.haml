@@ -1,0 +1,21 @@
+- s = @submission
+.w-full.max-w-2xl.mx-auto.flex.flex-col.gap-4
+  = link_to "← Your submissions", event_submissions_path(@event), class: "link text-sm"
+  .flex.items-start.justify-between.gap-2
+    %h1.text-2xl.font-bold= s.title
+    = status_badge(s.status)
+  .flex.items-center.gap-2
+    = track_chip(s.track)
+    %span.text-sm.opacity-60= s.talk_format
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      %p.whitespace-pre-line= s.abstract
+      - if s.key_takeaway.present?
+        %p.mt-2.text-sm
+          %span.font-semibold Key takeaway:
+          = s.key_takeaway
+  - if @event.cfp_open?
+    = link_to "Edit submission", edit_event_submission_path(@event, s), class: "btn btn-primary btn-sm w-fit"
+  - else
+    .alert.alert-warning
+      %span Editing is closed. Contact the organizers to make changes.

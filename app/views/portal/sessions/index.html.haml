@@ -1,0 +1,26 @@
+- content_for(:title, "My Sessions")
+.w-full.max-w-4xl.mx-auto.flex.flex-col.gap-6
+  %h1.text-3xl.font-bold My Sessions
+  - if @sessions.any?
+    .flex.flex-col.gap-3
+      - @sessions.each do |s|
+        = link_to portal_session_path(s), class: "card bg-base-100 shadow-sm border border-base-300 hover:shadow-md" do
+          .card-body.gap-2
+            .flex.items-start.justify-between.gap-3
+              %h2.card-title= s.title
+              = content_status_badge(s.content_status)
+            - if s.abstract.present?
+              %p.text-sm.opacity-70.line-clamp-2= truncate(s.abstract, length: 180)
+            .flex.flex-wrap.gap-3.items-center.text-sm.mt-1
+              - if s.track
+                = track_chip(s.track)
+              - if s.talk_format.present?
+                %span.opacity-60= s.talk_format
+              - if s.room
+                %span.opacity-60= "📍 #{s.room.name}"
+              - if s.starts_at
+                %span.opacity-60= "🕑 #{fmt_datetime(s.starts_at)}"
+  - else
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body.items-center.text-center
+        %p.opacity-70 You have no sessions yet.

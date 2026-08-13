@@ -1,0 +1,18 @@
+.max-w-3xl.flex.flex-col.gap-5
+  .flex.items-center.justify-between
+    %h1.text-2xl.font-bold Email Templates
+    = link_to "＋ New template", new_event_manage_email_template_path(@event), class: "btn btn-primary btn-sm"
+  %p.opacity-60.text-sm Reusable templates with merge fields like %code {speaker_name} and %code {talk_title}.
+  .flex.flex-col.gap-3
+    - @templates.each do |t|
+      .card.bg-base-100.border.border-base-300
+        .card-body
+          .flex.items-center.justify-between
+            %h2.font-semibold= t.name
+            .flex.gap-2
+              = link_to "Edit", edit_event_manage_email_template_path(@event, t), class: "btn btn-xs btn-outline"
+              = button_to "Delete", event_manage_email_template_path(@event, t), method: :delete, class: "btn btn-xs btn-ghost text-error"
+          %p.text-sm.font-medium= t.subject
+          %p.text-sm.opacity-60.whitespace-pre-line.line-clamp-3= t.body
+    - if @templates.empty?
+      %p.opacity-60.text-sm No templates yet.

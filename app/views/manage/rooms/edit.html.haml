@@ -1,0 +1,7 @@
+.max-w-md.flex.flex-col.gap-4
+  %h1.text-xl.font-bold Edit room
+  = simple_form_for @room, url: event_manage_room_path(@event, @room), method: :patch do |f|
+    = f.input :name
+    .flex.gap-2.mt-2
+      = f.button :submit, "Save", class: "btn btn-primary"
+      = link_to "Cancel", event_manage_rooms_path(@event), class: "btn btn-ghost"

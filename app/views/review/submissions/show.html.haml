@@ -1,0 +1,92 @@
+- content_for(:title, "#{@submission.title} · Review")
+- scores = @review.scores.to_h
+.w-full.max-w-3xl.mx-auto.flex.flex-col.gap-6
+  = link_to "← Back to my queue", event_review_root_path(@event), class: "btn btn-ghost btn-sm self-start"
+
+  - # ── Submission detail ───────────────────────────────────────────
+  %section.card.bg-base-100.border.border-base-300.rounded-box
+    .card-body.gap-4
+      .flex.flex-wrap.items-center.gap-2
+        = track_chip(@submission.track)
+        - if @submission.talk_format.present?
+          %span.badge.badge-ghost.badge-sm= @submission.talk_format
+        - if @submission.audience_level.present?
+          %span.badge.badge-outline.badge-sm= @submission.audience_level
+        - if @round.anonymized
+          %span.badge.badge-neutral.badge-sm Blind review
+      %h1.text-2xl.font-bold= @submission.title
+
+      - # ── Author identity: hidden entirely for anonymized rounds (ABS-07)
+      - if @round.anonymized
+        .alert.bg-base-200.border.border-base-300.text-sm
+          %span 🕶 Author hidden for blind review.
+      - else
+        - if @submission.speakers.any?
+          .flex.flex-col.gap-1
+            %div.text-xs.uppercase.tracking-wide.opacity-50 Speakers
+            - @submission.speakers.each do |sp|
+              %div
+                %span.font-medium= sp.name
+                - subtitle = [sp.title, sp.company].compact_blank.join(" · ")
+                - if subtitle.present?
+                  %span.text-sm.opacity-60= " — #{subtitle}"
+
+      - if @submission.key_takeaway.present?
+        .flex.flex-col.gap-1
+          %div.text-xs.uppercase.tracking-wide.opacity-50 Key takeaway
+          %p= @submission.key_takeaway
+
+      .flex.flex-col.gap-1
+        %div.text-xs.uppercase.tracking-wide.opacity-50 Abstract
+        %p.whitespace-pre-line= @submission.abstract
+
+      - answers = @submission.answers.to_h.reject { |_, v| v.blank? }
+      - if answers.any?
+        .divider.my-0
+        .flex.flex-col.gap-3
+          %div.text-xs.uppercase.tracking-wide.opacity-50 Submission answers
+          - answers.each do |label, value|
+            .flex.flex-col.gap-0.5
+              %div.text-sm.font-medium= label
+              %div.text-sm.opacity-80.whitespace-pre-line= value
+
+  - # ── Scorecard ───────────────────────────────────────────────────
+  %section.card.bg-base-100.border.border-base-300.rounded-box
+    .card-body.gap-4
+      .flex.items-center.justify-between
+        %h2.text-lg.font-semibold Your scorecard
+        - if @review.completed?
+          %span.badge.badge-success.badge-sm Reviewed ✓
+      - if @round.instructions.present?
+        %p.text-sm.opacity-70= @round.instructions
+
+      = simple_form_for @review, url: event_review_submission_review_path(@event, @submission), html: { class: "flex flex-col gap-5" } do |f|
+        = hidden_field_tag :round, @round.id
+
+        - @criteria.each do |c|
+          - current = scores[c.id.to_s]
+          .form-control.flex.flex-col.gap-1
+            %label.font-medium{ for: "scores_#{c.id}" }
+              = c.label
+              - if c.kind == "number"
+                %span.text-xs.opacity-50= " (#{c.min_value}–#{c.max_value}, weight #{c.weight})"
+            - case c.kind
+            - when "number"
+              = select_tag "scores[#{c.id}]", options_for_select((c.min_value..c.max_value).to_a.map(&:to_s), current), include_blank: "—", id: "scores_#{c.id}", class: "select select-bordered w-32"
+            - when "dropdown"
+              = select_tag "scores[#{c.id}]", options_for_select(c.option_list, current), include_blank: "—", id: "scores_#{c.id}", class: "select select-bordered w-56"
+            - else
+              = text_area_tag "scores[#{c.id}]", current, id: "scores_#{c.id}", rows: 3, class: "textarea textarea-bordered w-full"
+
+        = f.input :comment, label: "Overall comment", input_html: { rows: 4, class: "textarea textarea-bordered w-full" }, wrapper_html: { class: "form-control" }
+
+        .form-control
+          %label.label.cursor-pointer.justify-start.gap-3
+            = f.check_box :coi, class: "checkbox"
+            %span.label-text
+              Conflict of interest — recuse me from this session
+              %span.block.text-xs.opacity-60 Check this if you can't review fairly; your scores won't count toward the result.
+
+        .flex.items-center.gap-3
+          = f.button :submit, (@review.completed? ? "Update review" : "Submit review"), class: "btn btn-primary"
+          = link_to "Cancel", event_review_root_path(@event), class: "btn btn-ghost"

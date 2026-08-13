@@ -1,0 +1,65 @@
+- content_for(:title, "Itinerary — #{@event.name}")
+.flex.flex-col.gap-6{ data: { controller: "itinerary", "itinerary-key-value": "os-itinerary-#{@event.slug}" } }
+  .flex.flex-wrap.items-end.justify-between.gap-3
+    .flex.flex-col.gap-1
+      %h1.text-3xl.font-bold Schedule Itinerary
+      %p.opacity-70 Build your own agenda — pick sessions and they'll be saved on this device.
+    = link_to "＋ Add to calendar (iCal)", event_public_feed_path(@event, "itinerary", format: :ics), class: "btn btn-outline btn-sm"
+
+  / ── My personal schedule ──
+  .card.bg-primary.text-primary-content.shadow-md
+    .card-body.gap-3
+      %h2.card-title
+        My Schedule (
+        %span{ data: { "itinerary-target": "count" } } 0
+        )
+      %p.text-sm.opacity-90{ data: { "itinerary-target": "empty" } } No sessions yet — tap “★ Add to schedule” on any session below.
+      %ul.flex.flex-col.gap-2
+        - @all_sessions.each do |s|
+          %li.hidden.bg-base-100.text-base-content.rounded-lg.p-3{ data: { "itinerary-target": "item", session_id: s.id } }
+            .flex.flex-wrap.items-center.justify-between.gap-2
+              .flex.items-center.gap-2.min-w-0
+                %span.font-mono.text-xs.opacity-60.whitespace-nowrap= s.time_range
+                %span.font-medium.truncate= s.title
+              .flex.items-center.gap-2.shrink-0
+                - if s.room
+                  %span.text-xs.opacity-60= s.room.name
+                %button.btn.btn-ghost.btn-xs{ type: "button", data: { action: "itinerary#toggle", session_id: s.id } } Remove
+              %span.text-xs.opacity-50.w-full= fmt_date(s.starts_at)
+
+  - if @sessions_by_day.empty?
+    .text-center.py-16.opacity-60 No scheduled sessions yet.
+
+  / ── Day sections ──
+  - @days.each do |day|
+    - day_sessions = @sessions_by_day[day] || []
+    - next if day_sessions.empty?
+    .flex.flex-col.gap-3
+      %h2.text-xl.font-bold.border-b.border-base-300.pb-2= fmt_date(day)
+      - day_sessions.group_by { |s| s.starts_at.strftime("%-I:%M %p") }.each do |time_label, group|
+        .flex.flex-col.gap-2
+          %h3.text-sm.font-semibold.opacity-60= time_label
+          - group.each do |s|
+            .card.bg-base-100.shadow-sm.border.border-base-300
+              .card-body.gap-2
+                .flex.flex-wrap.items-start.justify-between.gap-2
+                  .flex.items-center.gap-2.flex-wrap
+                    = track_chip(s.track)
+                    %h4.font-semibold.text-lg.leading-snug= s.title
+                  %button.btn.btn-outline.btn-sm.shrink-0{ type: "button", data: { "itinerary-target": "button", action: "itinerary#toggle", session_id: s.id } }
+                    %span.itin-label ★ Add to schedule
+                .flex.flex-wrap.gap-x-3.gap-y-1.text-sm.opacity-70
+                  %span ▤ #{fmt_datetime(s.starts_at)}
+                  %span ◷ #{s.time_range}
+                  - if s.room
+                    %span ⌂ #{s.room.name}
+                = disclosure_text(s.abstract)
+                - if s.speakers.any?
+                  .flex.flex-col.gap-1.pt-1.border-t.border-base-200
+                    - s.speakers.each do |sp|
+                      .flex.items-center.gap-2
+                        = speaker_avatar(sp, size: 8)
+                        .leading-tight
+                          = link_to sp.name, event_public_speaker_path(@event, sp), class: "font-medium text-sm link link-hover"
+                          - if speaker_role(sp).present?
+                            %div.text-xs.opacity-60= speaker_role(sp)

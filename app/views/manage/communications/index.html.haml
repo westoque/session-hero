@@ -1,0 +1,17 @@
+.max-w-4xl.flex.flex-col.gap-4
+  .flex.items-center.justify-between
+    %h1.text-2xl.font-bold Communications
+    = link_to "✉ Compose", new_event_manage_communication_path(@event), class: "btn btn-primary btn-sm"
+  %p.opacity-60.text-sm Send templated emails to speakers and see a full history log. Status changes never auto-email.
+  - if @logs.any?
+    .flex.flex-col.gap-2
+      - @logs.each do |log|
+        .card.bg-base-100.border.border-base-300
+          .card-body.py-3
+            .flex.items-center.justify-between.flex-wrap.gap-1
+              %span.font-medium= log.subject
+              %span.text-xs.opacity-50= fmt_datetime(log.sent_at)
+            %p.text-sm.opacity-70.line-clamp-2= log.body
+            %p.text-xs.opacity-60.mt-1= "To #{log.recipient_count} recipient(s): #{log.recipient_list.map { |r| r['email'] }.first(5).join(', ')}"
+  - else
+    %p.opacity-60.text-sm No messages sent yet.

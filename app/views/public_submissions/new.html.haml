@@ -1,21 +1,83 @@
-.w-full.max-w-xl.mx-auto.flex.flex-col.gap-4
-  .flex.flex-col.gap-1
-    %h1.text-2xl.font-bold= "Submit to #{@event.name}"
-    %p.opacity-70 Propose a talk for this event's Call for Papers.
-  .card.bg-base-100.shadow-md.border.border-base-300
-    .card-body
-      = simple_form_for @submission, url: event_submit_path(@event) do |f|
-        = f.error_notification
-        - if user_signed_in?
-          .alert.alert-info.mb-4
-            %span= "Submitting as #{current_user.email}"
-        - else
+.w-full.max-w-2xl.mx-auto.flex.flex-col.gap-4
+  .text-center.flex.flex-col.gap-1
+    - if @event.logo.attached?
+      = image_tag @event.logo, class: "w-16 h-16 rounded mx-auto object-cover"
+    %h1.text-3xl.font-bold= @event.name
+    - if @event.tagline.present?
+      %p.opacity-70= @event.tagline
+    - if @form.closes_at.present?
+      %p.text-sm
+        %span.badge.badge-outline= "Submissions close #{fmt_datetime(@form.closes_at)}"
+
+  - if @closed
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body.items-center.text-center.gap-2
+        %h2.text-xl.font-bold Submissions are closed
+        %p.opacity-70 The call for papers for this event has closed. Thanks for your interest!
+        = link_to "View the program", event_public_site_path(@event), class: "btn btn-primary btn-sm mt-2"
+  - else
+    - if @form.welcome_message.present?
+      .alert.bg-base-100.border.border-base-300
+        %span= @form.welcome_message
+
+    - if @resuming
+      .alert.alert-info
+        %span ✎ Resuming your saved draft. Finish and submit when you're ready.
+
+    .card.bg-base-100.shadow-md.border.border-base-300
+      .card-body
+        = simple_form_for @submission, url: event_submit_path(@event), html: { data: { controller: "conditional-field" } } do |f|
+          = f.error_notification
+          - if user_signed_in?
+            .alert.alert-info.mb-4
+              %span= "Submitting as #{current_user.email}"
+          - else
+            .grid.grid-cols-1.gap-4{ class: "sm:grid-cols-2" }
+              = f.input :speaker_name, label: "Your name", input_html: { name: "submission[speaker_name]", value: params.dig(:submission, :speaker_name) || @submission.event_speaker&.name }
+              = f.input :contact_email, label: "Email", input_html: { name: "submission[contact_email]", value: @prefill_email }
+
+          = f.input :title, label: "Session title", placeholder: "Scaling LLMs in production"
+          = f.input :abstract, label: "Abstract / description", input_html: { rows: 5 }
           .grid.grid-cols-1.gap-4{ class: "sm:grid-cols-2" }
-            = f.input :speaker_name, label: "Your name", input_html: { value: params.dig(:submission, :speaker_name) }
-            = f.input :contact_email, label: "Email", placeholder: "you@example.com", input_html: { value: @prefill_email }
-        = f.input :title, label: "Talk title", placeholder: "Scaling LLMs in production"
-        = f.input :abstract, label: "Abstract", input_html: { rows: 5 }
-        = f.input :talk_format, label: "Format", collection: ["Talk", "Workshop", "Lightning talk", "Panel"], include_blank: "Choose…"
-        .mt-4
-          = f.button :submit, "Submit proposal", class: "btn btn-primary w-full"
-  %p.text-xs.opacity-60.text-center Anyone with this link can submit. If your email already has an account, this talk is added to it.
+            = f.input :talk_format, label: "Format", collection: @event.formats, include_blank: "Choose…", input_html: { data: { conditional_field_target: "trigger", action: "change->conditional-field#toggle" } }
+            = f.association :track, collection: @event.tracks, include_blank: "Choose track…"
+
+          -# Custom questions from the form builder
+          - @form.form_fields.each do |field|
+            - conditional = field.conditional_value.present?
+            %div{ data: (conditional ? { conditional_field_target: "dependent", show_when: field.conditional_value } : {}), class: (conditional ? "hidden" : "") }
+              - name = "answers[#{field.label}]"
+              - val = @submission.answers[field.label]
+              - case field.field_type
+              - when "long_text"
+                .form-control.mb-3
+                  %label.label.font-medium= field.label + (field.required ? " *" : "")
+                  = text_area_tag name, val, class: "textarea textarea-bordered w-full", rows: 3
+                  - if field.help_text.present?
+                    %span.text-xs.opacity-60= field.help_text
+              - when "dropdown"
+                .form-control.mb-3
+                  %label.label.font-medium= field.label + (field.required ? " *" : "")
+                  = select_tag name, options_for_select(field.option_list, val), include_blank: "Choose…", class: "select select-bordered w-full"
+              - when "checkbox"
+                .form-control.mb-3
+                  %label.label.font-medium= field.label
+                  - field.option_list.each do |opt|
+                    %label.label.cursor-pointer.gap-2.justify-start
+                      = check_box_tag "#{name}[]", opt, Array(val).include?(opt), class: "checkbox checkbox-sm"
+                      %span.label-text= opt
+              - when "number"
+                .form-control.mb-3
+                  %label.label.font-medium= field.label + (field.required ? " *" : "")
+                  = number_field_tag name, val, class: "input input-bordered w-full"
+              - else
+                .form-control.mb-3
+                  %label.label.font-medium= field.label + (field.required ? " *" : "")
+                  = text_field_tag name, val, class: "input input-bordered w-full"
+                  - if field.help_text.present?
+                    %span.text-xs.opacity-60= field.help_text
+
+          .flex.gap-2.mt-4
+            = f.button :submit, "Submit proposal", class: "btn btn-primary flex-1"
+            = button_tag "Save as draft", type: "submit", formaction: event_submit_draft_path(@event), formnovalidate: true, class: "btn btn-outline", name: "draft", value: "1"
+    %p.text-xs.opacity-60.text-center Anyone with this link can submit. If your email already has an account, this talk is added to it.

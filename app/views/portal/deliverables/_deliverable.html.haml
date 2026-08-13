@@ -1,0 +1,46 @@
+.rounded-lg.border.border-base-300.p-4.flex.flex-col.gap-3
+  .flex.items-start.justify-between.gap-2
+    .flex.flex-col
+      %h3.font-semibold= deliverable.title
+      %span.badge.badge-ghost.badge-sm= deliverable.kind.to_s.humanize
+    %span.text-xs.opacity-60= "#{deliverable.version_count} version#{'s' unless deliverable.version_count == 1}"
+
+  / Version history (CNT-04)
+  %div
+    %h4.text-sm.font-semibold.opacity-70.mb-1 Versions
+    .flex.flex-col.gap-1
+      - deliverable.file_versions.order(version_number: :desc).each do |v|
+        .flex.items-center.justify-between.gap-2.rounded.bg-base-200.px-3.py-2
+          .flex.items-center.gap-2
+            %span.badge.badge-sm{ class: (v.latest? ? "badge-primary" : "badge-ghost") }= "v#{v.version_number}"
+            - if v.latest?
+              %span.badge.badge-success.badge-xs Latest
+            - if v.file.attached?
+              = link_to v.filename, v.file, target: "_blank", class: "link link-hover text-sm"
+            - else
+              %span.text-sm.opacity-60 (no file)
+          %span.text-xs.opacity-60= fmt_datetime(v.created_at)
+
+  / Add new version (CNT-04)
+  = form_with url: add_version_portal_session_deliverable_path(deliverable.submission, deliverable), method: :post, multipart: true, class: "flex items-center gap-2" do |f|
+    = file_field_tag "file", class: "file-input file-input-bordered file-input-xs w-full max-w-xs"
+    = f.submit "Upload new version", class: "btn btn-outline btn-xs"
+
+  .divider.my-0
+
+  / Comments (CNT-05)
+  %div
+    %h4.text-sm.font-semibold.opacity-70.mb-2 Comments
+    - if deliverable.file_comments.any?
+      .flex.flex-col.gap-2.mb-3
+        - deliverable.file_comments.each do |c|
+          .rounded.bg-base-200.px-3.py-2
+            .flex.items-center.justify-between
+              %span.text-sm.font-medium= c.display_author
+              %span.text-xs.opacity-60= fmt_datetime(c.created_at)
+            %p.text-sm.mt-1= c.body
+    - else
+      %p.text-sm.opacity-60.mb-2 No comments yet.
+    = form_with url: portal_session_deliverable_comments_path(deliverable.submission, deliverable), method: :post, class: "flex items-center gap-2" do |f|
+      = text_field_tag "file_comment[body]", nil, placeholder: "Add a comment…", class: "input input-bordered input-sm w-full"
+      = f.submit "Post", class: "btn btn-primary btn-sm"

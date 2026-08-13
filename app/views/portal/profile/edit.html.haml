@@ -1,0 +1,32 @@
+- content_for(:title, "My Profile")
+.w-full.max-w-2xl.mx-auto.flex.flex-col.gap-4
+  %h1.text-2xl.font-bold My Speaker Profile
+  %p.text-sm.opacity-70 This is what organizers and attendees see. Keep it current.
+
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      = simple_form_for @speaker, url: portal_profile_path, method: :patch, html: { multipart: true } do |f|
+        = f.error_notification
+
+        .flex.items-center.gap-4.mb-2
+          = speaker_avatar(@speaker, size: 20)
+          .flex.flex-col.gap-1.w-full
+            = f.input :headshot, as: :file, label: "Headshot", input_html: { accept: "image/*", class: "file-input file-input-bordered w-full" }
+
+        = f.input :name, label: "Name"
+        .grid.grid-cols-1.gap-4{ class: "sm:grid-cols-2" }
+          = f.input :title, label: "Job title", placeholder: "Principal Engineer"
+          = f.input :company, label: "Company"
+        = f.input :bio, label: "Bio", input_html: { rows: 5 }
+        .grid.grid-cols-1.gap-4{ class: "sm:grid-cols-2" }
+          = f.input :twitter, label: "Twitter / X", placeholder: "@handle"
+          = f.input :linkedin, label: "LinkedIn URL"
+        = f.input :travel_notes, label: "Travel & logistics notes", input_html: { rows: 3 }, hint: "Arrival, dietary needs, AV requests, etc."
+
+        .mt-4.flex.gap-2
+          = f.button :submit, "Save profile", class: "btn btn-primary"
+          = link_to "Back to dashboard", portal_root_path, class: "btn btn-ghost"
+
+  - if current_speakers.size > 1
+    %p.text-xs.opacity-60
+      = "You appear at #{current_speakers.size} events. Changes apply to all of them."

@@ -1,0 +1,21 @@
+.max-w-2xl.flex.flex-col.gap-4
+  %h1.text-2xl.font-bold Edit session
+  = simple_form_for @submission, url: event_manage_submission_path(@event, @submission), method: :patch do |f|
+    = f.error_notification
+    = f.input :title, label: "Session title"
+    = f.input :abstract, as: :text, input_html: { rows: 6 }
+    .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2" }
+      = f.input :talk_format, collection: @event.formats, include_blank: "Choose format…"
+      = f.association :track, collection: @event.tracks, include_blank: "Choose track…"
+      = f.association :room, collection: @event.rooms, include_blank: "Unassigned"
+      = f.input :audience_level, collection: ["Beginner", "Intermediate", "Advanced"], include_blank: "—"
+      = f.input :key_takeaway
+      = f.input :status, collection: Submission.statuses.keys.map { |k| [k.humanize, k] }, include_blank: false
+      = f.input :content_status, label: "Content / approval status", collection: Submission::CONTENT_STATUSES.map { |s| [s.humanize, s] }, include_blank: false
+      = f.input :public_visible, as: :boolean, label: "Visible on public site"
+    .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2" }
+      = f.input :starts_at, as: :string, input_html: { type: "datetime-local", value: @submission.starts_at&.strftime("%Y-%m-%dT%H:%M") }
+      = f.input :ends_at, as: :string, input_html: { type: "datetime-local", value: @submission.ends_at&.strftime("%Y-%m-%dT%H:%M") }
+    .flex.gap-2.mt-2
+      = f.button :submit, "Save session", class: "btn btn-primary"
+      = link_to "Cancel", event_manage_submission_path(@event, @submission), class: "btn btn-ghost"

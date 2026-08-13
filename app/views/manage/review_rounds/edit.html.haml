@@ -1,0 +1,13 @@
+.max-w-2xl.flex.flex-col.gap-4
+  %h1.text-2xl.font-bold Edit round
+  = simple_form_for @round, url: event_manage_review_round_path(@event, @round), method: :patch do |f|
+    = f.input :name
+    = f.input :instructions, as: :text, input_html: { rows: 2 }
+    .grid.grid-cols-1.gap-3{ class: "md:grid-cols-2" }
+      = f.input :opens_at, as: :string, input_html: { type: "datetime-local", value: @round.opens_at&.strftime("%Y-%m-%dT%H:%M") }
+      = f.input :closes_at, as: :string, input_html: { type: "datetime-local", value: @round.closes_at&.strftime("%Y-%m-%dT%H:%M") }
+    = f.input :anonymized, as: :boolean, label: "Blind review"
+    = f.input :status, collection: %w[open closed], include_blank: false
+    .flex.gap-2.mt-2
+      = f.button :submit, "Save", class: "btn btn-primary"
+      = link_to "Cancel", event_manage_review_round_path(@event, @round), class: "btn btn-ghost"

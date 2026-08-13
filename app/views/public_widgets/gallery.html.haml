@@ -1,0 +1,67 @@
+- content_for(:title, "Speaker Gallery — #{@event.name}")
+- public_ids = @event.public_sessions.map(&:id).to_set
+.flex.flex-col.gap-6
+  .flex.flex-col.gap-1
+    %h1.text-3xl.font-bold Speaker Gallery
+    - if @speakers.size == @total
+      %p.opacity-70= "#{@total} #{'speaker'.pluralize(@total)}"
+    - else
+      %p.opacity-70= "Showing #{@speakers.size} of #{@total} speakers"
+
+  .card.bg-base-100.shadow-sm.border.border-base-300
+    .card-body
+      = form_with url: event_public_gallery_path(@event), method: :get, class: "flex flex-wrap gap-2 items-end" do |f|
+        .form-control.flex-1{ style: "min-width: 220px" }
+          = f.label :q, "Search speakers by name", class: "label label-text text-xs"
+          = f.search_field :q, value: params[:q], placeholder: "e.g. Tom…", class: "input input-bordered w-full"
+        = f.submit "Search", class: "btn btn-primary"
+        - if params[:q].present?
+          = link_to "Reset", event_public_gallery_path(@event), class: "btn btn-ghost"
+
+  - if @speakers.any?
+    .grid.gap-4{ class: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4" }
+      - @speakers.each do |sp|
+        - sessions = sp.sessions.select { |s| public_ids.include?(s.id) }.sort_by { |s| s.starts_at || Time.utc(0) }
+        %button.card.bg-base-100.shadow-sm.border.border-base-300.hover:shadow-md.transition-shadow.text-center{ type: "button", onclick: "document.getElementById('spk_#{sp.id}').showModal()" }
+          .card-body.items-center.gap-2.p-4
+            = speaker_avatar(sp, size: 20)
+            .leading-tight
+              .font-semibold.text-sm= sp.name
+              - if speaker_role(sp).present?
+                .text-xs.opacity-60= speaker_role(sp)
+        %dialog.modal{ id: "spk_#{sp.id}" }
+          .modal-box
+            %form{ method: "dialog" }
+              %button.btn.btn-sm.btn-circle.btn-ghost.absolute.right-2.top-2 ✕
+            .flex.flex-col.items-center.gap-3.text-center
+              = speaker_avatar(sp, size: 24)
+              %div
+                %h3.text-xl.font-bold= sp.name
+                - if speaker_role(sp).present?
+                  %p.opacity-70= speaker_role(sp)
+            - if sp.bio.present?
+              .mt-4
+                = disclosure_text(sp.bio, css: "text-sm leading-relaxed")
+            .mt-4
+              %h4.font-semibold.text-sm.mb-1= "Sessions (#{sessions.size})"
+              - if sessions.any?
+                %ul.flex.flex-col.gap-1
+                  - sessions.each do |s|
+                    %li.text-sm
+                      %span.font-medium= s.title
+                      - if s.starts_at
+                        %span.opacity-60.block.text-xs
+                          = fmt_datetime(s.starts_at)
+                          - if s.room
+                            = "· #{s.room.name}"
+              - else
+                %p.text-sm.opacity-60 No public sessions listed.
+            .modal-action
+              %form{ method: "dialog" }
+                %button.btn.btn-sm Close
+          %form.modal-backdrop{ method: "dialog" }
+            %button close
+  - else
+    .text-center.py-16.opacity-60
+      %p.text-lg No speakers match your search.
+      = link_to "Clear search", event_public_gallery_path(@event), class: "link link-primary"

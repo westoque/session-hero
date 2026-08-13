@@ -1,0 +1,40 @@
+- content_for(:title, "#{@speaker.name} — #{@event.name}")
+.max-w-3xl.mx-auto.flex.flex-col.gap-6
+  = link_to "‹ All speakers", event_public_speakers_path(@event), class: "link link-hover text-sm opacity-70 w-fit"
+
+  .card.bg-base-100.shadow-sm.border.border-base-300
+    .card-body
+      .flex.flex-col.gap-4{ class: "sm:flex-row sm:items-start" }
+        = speaker_avatar(@speaker, size: 24)
+        .flex-1.flex.flex-col.gap-2
+          %h1.text-3xl.font-bold= @speaker.name
+          - if speaker_role(@speaker).present?
+            %p.text-lg.opacity-70= speaker_role(@speaker)
+          .flex.flex-wrap.gap-2.mt-1
+            - if @speaker.twitter.present?
+              = link_to "Twitter / X", (@speaker.twitter.start_with?("http") ? @speaker.twitter : "https://twitter.com/#{@speaker.twitter.delete('@')}"), class: "btn btn-outline btn-xs", target: "_blank", rel: "noopener"
+            - if @speaker.linkedin.present?
+              = link_to "LinkedIn", (@speaker.linkedin.start_with?("http") ? @speaker.linkedin : "https://linkedin.com/in/#{@speaker.linkedin}"), class: "btn btn-outline btn-xs", target: "_blank", rel: "noopener"
+      - if @speaker.bio.present?
+        .divider.my-2
+        %p.whitespace-pre-line.leading-relaxed= @speaker.bio
+
+  .card.bg-base-100.shadow-sm.border.border-base-300
+    .card-body
+      %h2.card-title= "Sessions (#{@sessions.size})"
+      - if @sessions.any?
+        %ul.divide-y.divide-base-200.-mx-2
+          - @sessions.each do |s|
+            %li.px-2.py-3
+              - if s.starts_at
+                = link_to event_public_agenda_path(@event, day: s.starts_at.to_date, session: s.id), class: "block hover:bg-base-200 rounded px-2 py-1 -mx-2" do
+                  .font-medium= s.title
+                  .text-sm.opacity-60
+                    = fmt_datetime(s.starts_at)
+                    - if s.room
+                      = "· #{s.room.name}"
+              - else
+                .px-2.py-1
+                  .font-medium= s.title
+      - else
+        %p.opacity-60 No public sessions listed yet.

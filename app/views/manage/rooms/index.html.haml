@@ -1,0 +1,22 @@
+.max-w-3xl.flex.flex-col.gap-5
+  .flex.items-center.justify-between
+    %h1.text-2xl.font-bold Rooms
+    = link_to "← Tracks", event_manage_tracks_path(@event), class: "btn btn-ghost btn-sm"
+  %p.opacity-60.text-sm Rooms are the columns of your agenda grid.
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      - if @rooms.any?
+        .flex.flex-col.gap-2
+          - @rooms.each do |r|
+            .flex.items-center.gap-3.border.border-base-300.rounded-box.p-2
+              %span.font-medium.flex-1= r.name
+              = link_to "Edit", edit_event_manage_room_path(@event, r), class: "btn btn-xs btn-ghost"
+              = button_to "Remove", event_manage_room_path(@event, r), method: :delete, class: "btn btn-xs btn-ghost text-error"
+      - else
+        %p.opacity-60.text-sm No rooms yet.
+  .card.bg-base-100.border.border-base-300
+    .card-body
+      %h2.font-semibold.text-sm Add a room
+      = simple_form_for @room, url: event_manage_rooms_path(@event), html: { class: "flex flex-wrap items-end gap-3" } do |f|
+        = f.input :name, label: "Room name", placeholder: "Main Stage"
+        = f.button :submit, "Add room", class: "btn btn-primary"

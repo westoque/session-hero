@@ -1,0 +1,19 @@
+= simple_form_for task, url: (task.persisted? ? event_manage_portal_task_path(@event, task) : event_manage_portal_tasks_path(@event)) do |f|
+  = f.input :title
+  = f.input :description, as: :text, input_html: { rows: 2 }
+  .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2" }
+    = f.input :due_on, as: :string, input_html: { type: "date", value: task.due_on }
+    = f.input :task_type, collection: PortalTask::TASK_TYPES.map { |t| [t.humanize, t] }, include_blank: false, hint: "File request = speaker uploads a file."
+  = f.input :external_link, label: "External link (optional)"
+  = f.input :required, as: :boolean
+  .card.bg-base-200.border.border-base-300.mt-2
+    .card-body
+      %h3.font-semibold.text-sm Assign to speakers
+      .grid.grid-cols-2.gap-1{ class: "md:grid-cols-3" }
+        - @event.event_speakers.each do |sp|
+          %label.label.cursor-pointer.gap-2.justify-start
+            = check_box_tag "portal_task[speaker_ids][]", sp.id, task.event_speakers.include?(sp), class: "checkbox checkbox-sm"
+            %span.label-text.text-sm= sp.name
+  .flex.gap-2.mt-3
+    = f.button :submit, "Save task", class: "btn btn-primary"
+    = link_to "Cancel", event_manage_portal_tasks_path(@event), class: "btn btn-ghost"

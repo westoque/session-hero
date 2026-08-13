@@ -1,53 +1,50 @@
-.w-full.max-w-4xl.mx-auto.flex.flex-col.gap-6
-  .flex.items-center.justify-between
-    .flex.flex-col.gap-1
-      %h1.text-3xl.font-bold= @event.name
-      %span.badge.badge-primary.badge-sm Organizer console
-    .flex.gap-2
-      = link_to "Edit event", edit_event_path(@event), class: "btn btn-ghost btn-sm"
-      = link_to "Public page", event_path(@event), class: "btn btn-ghost btn-sm"
+.flex.flex-col.gap-6
+  .flex.items-center.justify-between.flex-wrap.gap-3
+    %div
+      %h1.text-2xl.font-bold= @event.name
+      %p.opacity-60.text-sm= [@event.date_range, @event.location].compact.join(" · ")
+    = link_to "Edit event details", event_manage_settings_path(@event), class: "btn btn-outline btn-sm"
 
-  / Shareable CFP link
-  .card.bg-base-100.shadow-md.border.border-base-300
-    .card-body
-      %h2.card-title Call for Papers link
-      %p.text-sm.opacity-70 Share this public link to collect speaker submissions.
-      .join.w-full.mt-2
-        %input.input.join-item.w-full{ type: "text", readonly: true, value: event_submit_url(@event), onclick: "this.select()" }
-        = link_to "Open", event_submit_path(@event), class: "btn btn-primary join-item"
+  .card.bg-base-100.border.border-base-300
+    .card-body.gap-2
+      %h2.font-semibold Call for Papers link
+      %p.text-sm.opacity-60 Share this public link to collect submissions — no login required.
+      .join.w-full
+        %input.input.input-bordered.join-item.w-full{ type: "text", readonly: true, value: event_submit_url(@event), onclick: "this.select()" }
+        = link_to "Open", event_submit_path(@event), class: "btn btn-primary join-item", target: "_blank"
 
-  / Stats
-  .stats.shadow.bg-base-100.border.border-base-300.w-full{ class: "stats-vertical sm:stats-horizontal" }
-    .stat
-      .stat-title Submissions
-      .stat-value.text-primary= @submissions.size
-    .stat
-      .stat-title Speakers
-      .stat-value= @event.speakers.count
-    .stat
-      .stat-title Accepted
-      .stat-value.text-success= @submissions.count { |s| s.accepted? }
+  .grid.grid-cols-2.gap-4{ class: "lg:grid-cols-4" }
+    - [["Submissions", @submissions.size, "text-primary"], ["Speakers", @speaker_count, ""], ["Accepted", @counts["accepted"].to_i, "text-success"], ["Scheduled", @scheduled, "text-info"]].each do |label, val, cls|
+      .stat.bg-base-100.border.border-base-300.rounded-box
+        .stat-title= label
+        %div{ class: "stat-value #{cls}" }= val
 
-  / Recent submissions
-  .card.bg-base-100.shadow-md.border.border-base-300
-    .card-body
-      .flex.items-center.justify-between
-        %h2.card-title Recent submissions
-        = link_to "Review all", event_manage_submissions_path(@event), class: "btn btn-secondary btn-sm"
-      - if @submissions.any?
-        .overflow-x-auto.mt-2
-          %table.table
-            %thead
-              %tr
-                %th Title
-                %th Speaker
-                %th Status
-            %tbody
-              - @submissions.first(8).each do |s|
-                %tr
-                  %td= s.title
-                  %td= s.user.email
-                  %td
-                    %span.badge.badge-sm.badge-ghost= s.status.humanize
-      - else
-        %p.opacity-70.mt-2 No submissions yet. Share the CFP link above to get started.
+  .grid.grid-cols-1.gap-4{ class: "lg:grid-cols-2" }
+    .card.bg-base-100.border.border-base-300
+      .card-body
+        .flex.items-center.justify-between
+          %h2.card-title.text-base Recent submissions
+          = link_to "Review all →", event_manage_submissions_path(@event), class: "link link-primary text-sm"
+        - if @submissions.any?
+          .overflow-x-auto
+            %table.table.table-sm
+              %tbody
+                - @submissions.first(6).each do |s|
+                  %tr
+                    %td= link_to s.title, event_manage_submission_path(@event, s), class: "link"
+                    %td= status_badge(s.status)
+        - else
+          %p.opacity-60.text-sm No submissions yet.
+    .card.bg-base-100.border.border-base-300
+      .card-body.gap-2
+        %h2.card-title.text-base Pipeline
+        - %w[submitted under_review accepted rejected waitlisted].each do |st|
+          .flex.items-center.justify-between.text-sm
+            = status_badge(st)
+            %span.font-mono= @counts[st].to_i
+        .divider.my-1
+        .flex.flex-wrap.gap-2
+          = link_to "Submission forms", event_manage_submission_forms_path(@event), class: "btn btn-xs btn-outline"
+          = link_to "Evaluation", event_manage_review_rounds_path(@event), class: "btn btn-xs btn-outline"
+          = link_to "Agenda", event_manage_agenda_path(@event), class: "btn btn-xs btn-outline"
+          = link_to "Speakers", event_manage_speakers_path(@event), class: "btn btn-xs btn-outline"

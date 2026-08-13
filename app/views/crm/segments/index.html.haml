@@ -1,0 +1,26 @@
+.w-full.max-w-3xl.mx-auto.flex.flex-col.gap-6
+  .flex.items-center.justify-between
+    .flex.flex-col.gap-1
+      %h1.text-3xl.font-bold Segments
+      %span.text-sm.opacity-70 Saved directory filters
+    = link_to "Directory", crm_contacts_path, class: "btn btn-ghost btn-sm"
+
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      - if @segments.any?
+        %ul.flex.flex-col.gap-2
+          - @segments.each do |seg|
+            %li.flex.items-center.justify-between.gap-2.p-2.rounded-lg.hover:bg-base-200
+              .flex.flex-col
+                = link_to seg.name, crm_contacts_path(seg.criteria_hash), class: "link link-hover font-medium"
+                %div.flex.flex-wrap.gap-1.mt-1
+                  - if seg.criteria_hash.any?
+                    - seg.criteria_hash.each do |k, v|
+                      %span.badge.badge-ghost.badge-xs= "#{k}: #{v}"
+                  - else
+                    %span.text-xs.opacity-60 No criteria (all contacts)
+              .flex.gap-2
+                = link_to "Apply", crm_contacts_path(seg.criteria_hash), class: "btn btn-primary btn-xs"
+                = button_to "Delete", crm_segment_path(seg), method: :delete, class: "btn btn-ghost btn-xs", form: { data: { turbo_confirm: "Delete this segment?" } }
+      - else
+        %p.opacity-70 No segments yet. Apply filters in the Directory, then use “Save as segment”.

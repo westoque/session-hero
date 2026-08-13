@@ -1,0 +1,40 @@
+.max-w-4xl.flex.flex-col.gap-4
+  .flex.items-center.justify-between.flex-wrap.gap-2
+    %div
+      = link_to "← Evaluation", event_manage_review_rounds_path(@event), class: "text-sm link"
+      %h1.text-2xl.font-bold Review results
+    .flex.gap-2
+      - if @event.review_rounds.many?
+        = form_tag results_event_manage_review_rounds_path(@event), method: :get, class: "flex gap-1" do
+          = select_tag :round, options_from_collection_for_select(@event.review_rounds, :id, :name, @round&.id), class: "select select-bordered select-sm", onchange: "this.form.submit()"
+      = link_to "Export CSV", results_event_manage_review_rounds_path(@event, round: @round&.id, format: :csv), class: "btn btn-sm btn-outline"
+  %p.opacity-60.text-sm= "Round: #{@round&.name}. Sorted by weighted score."
+  .flex.gap-2
+    = link_to "Sort ↓ (high→low)", results_event_manage_review_rounds_path(@event, round: @round&.id, sort: "score", dir: "desc"), class: "btn btn-xs #{'btn-primary' if params[:dir] != 'asc'}"
+    = link_to "Sort ↑ (low→high)", results_event_manage_review_rounds_path(@event, round: @round&.id, sort: "score", dir: "asc"), class: "btn btn-xs #{'btn-primary' if params[:dir] == 'asc'}"
+  .card.bg-base-100.border.border-base-300
+    .card-body.p-0.overflow-x-auto
+      %table.table
+        %thead
+          %tr
+            %th Title
+            %th Speaker
+            %th Track
+            %th Reviews
+            %th Unweighted
+            %th Weighted
+            %th Status
+            %th AI
+        %tbody
+          - @rows.each do |row|
+            - s = row[:submission]
+            %tr
+              %td= link_to s.title, event_manage_submission_path(@event, s), class: "link"
+              %td.text-sm= s.speaker_names
+              %td= track_chip(s.track)
+              %td= row[:reviews]
+              %td= row[:unweighted] || "—"
+              %td
+                %span.font-bold= row[:weighted] || "—"
+              %td= status_badge(s.status)
+              %td= button_to "AI score", ai_evaluate_event_manage_review_round_path(@event, @round, submission_id: s.id), method: :post, class: "btn btn-xs btn-ghost" if @round

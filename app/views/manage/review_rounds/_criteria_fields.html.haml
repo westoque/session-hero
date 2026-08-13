@@ -1,0 +1,6 @@
+.grid.gap-2{ class: "md:grid-cols-5", style: "grid-template-columns: 2fr 1fr 1fr 1fr auto" }
+  = ff.input :label, label: false, placeholder: "Criterion (e.g. Originality)"
+  = ff.input :kind, collection: ReviewCriterion::KINDS.map { |k| [k.humanize, k] }, label: false, include_blank: false
+  = ff.input :max_value, label: false, placeholder: "Max", input_html: { min: 1 }
+  = ff.input :weight, label: false, placeholder: "Weight", input_html: { min: 1 }
+  = ff.input :options_text, label: false, placeholder: "opt,opt (dropdown)"

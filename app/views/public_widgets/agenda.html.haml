@@ -1,0 +1,69 @@
+- content_for(:title, "Agenda — #{@event.name}")
+.flex.flex-col.gap-6
+  %h1.text-3xl.font-bold Agenda
+
+  - if @session
+    / ── EMB-08 session detail panel ──
+    .card.bg-base-100.shadow-md.border.border-primary
+      .card-body.gap-3
+        = link_to "‹ Back to agenda", event_public_agenda_path(@event, day: @day), class: "link link-hover text-sm opacity-70 w-fit"
+        .flex.flex-wrap.items-start.justify-between.gap-2
+          %h2.text-2xl.font-bold= @session.title
+          .flex.gap-1
+            - if @session.talk_format.present?
+              %span.badge.badge-ghost.badge-sm= @session.talk_format
+            = track_chip(@session.track)
+        .flex.flex-wrap.gap-x-4.gap-y-1.text-sm.opacity-70
+          - if @session.starts_at
+            %span ▤ #{fmt_date(@session.starts_at)}
+            %span ◷ #{@session.time_range}
+          - if @session.room
+            %span ⌂ #{@session.room.name}
+        - if @session.speakers.any?
+          %p.text-sm.font-medium= @session.speakers.map(&:name).join(", ")
+        - if @session.abstract.present?
+          %p.leading-relaxed= @session.abstract
+
+  - if @days.any?
+    .tabs.tabs-boxed.bg-base-100.border.border-base-300.w-fit
+      - @days.each do |d|
+        = link_to fmt_date(d), event_public_agenda_path(@event, day: d), class: "tab #{'tab-active' if d == @day}"
+
+  - if @day_sessions.any? && @rooms.any?
+    .overflow-x-auto.border.border-base-300.rounded-lg.bg-base-100
+      - cols = "4.5rem repeat(#{@rooms.size}, minmax(170px, 1fr))"
+      .grid{ style: "grid-template-columns: #{cols}; min-width: #{4.5 + @rooms.size * 11}rem" }
+        / header row
+        .p-2.border-b.border-base-300.bg-base-200.text-xs.font-semibold.opacity-60 Time
+        - @rooms.each do |room|
+          .p-2.border-b.border-l.border-base-300.bg-base-200.text-sm.font-semibold.text-center= room.name
+        / hour rows
+        - (@start_hour..@end_hour).each do |hour|
+          .p-2.border-b.border-base-300.text-xs.opacity-60.text-right{ class: "whitespace-nowrap" }
+            = Time.utc(2000, 1, 1, hour).strftime("%-l %p")
+          - @rooms.each do |room|
+            .p-1.border-b.border-l.border-base-300.min-h-16.flex.flex-col.gap-1
+              - @day_sessions.select { |s| s.room_id == room.id && s.starts_at.hour == hour }.each do |s|
+                = link_to event_public_agenda_path(@event, day: @day, session: s.id), class: "block rounded p-2 text-white text-xs leading-tight shadow-sm hover:opacity-90", style: "background-color: #{s.track&.color || '#4b5563'}" do
+                  .font-semibold= s.title
+                  .opacity-90.mt-1
+                    = s.time_range
+                    - if s.talk_format.present?
+                      = "· #{s.talk_format}"
+  - elsif @days.any?
+    .text-center.py-12.opacity-60 No scheduled sessions for this day.
+
+  / ── List fallback ──
+  - if @day_sessions.any?
+    .card.bg-base-100.shadow-sm.border.border-base-300
+      .card-body
+        %h2.card-title.text-lg= "#{fmt_date(@day)} — schedule list"
+        %ul.divide-y.divide-base-200.-mx-2
+          - @day_sessions.each do |s|
+            %li.px-2.py-2
+              = link_to event_public_agenda_path(@event, day: @day, session: s.id), class: "flex flex-wrap items-center gap-x-3 gap-y-1 hover:bg-base-200 rounded px-2 py-1 -mx-2" do
+                %span.font-mono.text-xs.opacity-60.w-32= s.time_range
+                %span.font-medium.flex-1= s.title
+                - if s.room
+                  %span.text-xs.opacity-60= s.room.name
+                = track_chip(s.track)

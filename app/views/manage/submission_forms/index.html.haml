@@ -1,0 +1,20 @@
+.max-w-3xl.flex.flex-col.gap-5
+  .flex.items-center.justify-between
+    %h1.text-2xl.font-bold Submission Forms
+    = link_to "＋ Create form", new_event_manage_submission_form_path(@event), class: "btn btn-primary btn-sm"
+  %p.opacity-60.text-sm Build the public forms that collect session proposals. Share the public link — no login needed to submit.
+  .flex.flex-col.gap-3
+    - @forms.each do |form|
+      .card.bg-base-100.border.border-base-300
+        .card-body
+          .flex.items-center.justify-between.flex-wrap.gap-2
+            %div
+              %h2.font-semibold= form.name.presence || form.title
+              %p.text-xs.opacity-60= "#{form.form_fields.count + 3} questions · #{form.submissions.count} submissions"
+            .flex.items-center.gap-2
+              - if form.open?
+                %span.badge.badge-success.badge-sm Open
+              - else
+                %span.badge.badge-ghost.badge-sm Closed
+              = link_to "Edit builder", event_manage_submission_form_path(@event, form), class: "btn btn-sm btn-outline"
+              = link_to "View public form", event_submit_path(@event), class: "btn btn-sm btn-ghost", target: "_blank"

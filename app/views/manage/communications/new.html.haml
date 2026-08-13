@@ -1,0 +1,27 @@
+.max-w-3xl.flex.flex-col.gap-4
+  %h1.text-2xl.font-bold Compose email
+  - if @templates.any?
+    .flex.items-center.gap-2
+      %span.text-sm.opacity-60 Start from template:
+      - @templates.each do |t|
+        = link_to t.name, new_event_manage_communication_path(@event, template_id: t.id), class: "btn btn-xs #{@template&.id == t.id ? 'btn-primary' : 'btn-outline'}"
+  = form_tag event_manage_communications_path(@event), method: :post, class: "flex flex-col gap-4" do
+    .card.bg-base-100.border.border-base-300
+      .card-body.gap-3
+        %div
+          .flex.items-center.justify-between
+            %label.text-sm.font-semibold Recipients
+            %label.label.cursor-pointer.gap-2
+              = check_box_tag :all, "1"
+              %span.label-text.text-xs All speakers
+          .grid.grid-cols-2.gap-1.mt-1{ class: "md:grid-cols-3" }
+            - @recipients.each do |sp|
+              %label.label.cursor-pointer.gap-2.justify-start
+                = check_box_tag "speaker_ids[]", sp.id, false, class: "checkbox checkbox-xs"
+                %span.label-text.text-sm= sp.name
+        = text_field_tag :subject, @template&.subject, placeholder: "Subject", class: "input input-bordered w-full"
+        = text_area_tag :body, @template&.body, rows: 8, class: "textarea textarea-bordered w-full"
+        %p.text-xs.opacity-60 Merge fields resolve per recipient: {speaker_name}, {first_name}, {talk_title}, {event_name}, {portal_link}
+    .flex.gap-2
+      = submit_tag "Send", class: "btn btn-primary"
+      = link_to "Cancel", event_manage_communications_path(@event), class: "btn btn-ghost"

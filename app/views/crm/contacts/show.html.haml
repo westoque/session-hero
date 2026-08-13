@@ -1,0 +1,203 @@
+.w-full.max-w-5xl.mx-auto.flex.flex-col.gap-6
+  = link_to "← Back to directory", crm_contacts_path, class: "link link-hover text-sm"
+
+  / Identity header
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body
+      .flex.items-start.justify-between.flex-wrap.gap-4
+        .flex.items-center.gap-4
+          .avatar.placeholder
+            .bg-primary.text-primary-content.rounded-full.w-16
+              %span.text-xl= @contact.initials
+          .flex.flex-col.gap-1
+            %h1.text-2xl.font-bold= @contact.name
+            %div.text-sm.opacity-70
+              - if @contact.job_title.present?
+                = @contact.job_title
+              - if @contact.company.present?
+                = " · #{@contact.company}"
+            - if @contact.email.present?
+              = mail_to @contact.email, @contact.email, class: "link link-hover text-sm"
+            .flex.flex-wrap.gap-1.mt-1
+              - if @contact.speaker_type.present?
+                %span.badge.badge-outline.badge-sm= @contact.speaker_type
+              - if @contact.enrolled?
+                %span.badge.badge-primary.badge-sm= "Pipeline: #{@contact.pipeline_stage}"
+        .flex.gap-2.flex-wrap
+          = link_to "Edit", edit_crm_contact_path(@contact), class: "btn btn-ghost btn-sm"
+          %button.btn.btn-primary.btn-sm{ type: "button", onclick: "document.getElementById('add_event_modal').showModal()" } Add to event
+          - unless @contact.enrolled?
+            %button.btn.btn-secondary.btn-sm{ type: "button", onclick: "document.getElementById('enroll_modal').showModal()" } Enroll in pipeline
+
+  .grid.grid-cols-1.gap-6{ class: "lg:grid-cols-3" }
+    .flex.flex-col.gap-6{ class: "lg:col-span-2" }
+      / Bio + custom fields
+      .card.bg-base-100.shadow-md.border.border-base-300
+        .card-body
+          %h2.card-title Profile
+          - if @contact.bio.present?
+            %p.text-sm.mt-1= @contact.bio
+          - else
+            %p.text-sm.opacity-60.mt-1 No bio yet.
+          .divider.my-2
+          %dl.grid.grid-cols-2.gap-2.text-sm
+            %div
+              %dt.opacity-60 Company
+              %dd= @contact.company.presence || "—"
+            %div
+              %dt.opacity-60 Job title
+              %dd= @contact.job_title.presence || "—"
+            %div
+              %dt.opacity-60 Speaker type
+              %dd= @contact.speaker_type.presence || "—"
+            %div
+              %dt.opacity-60 Tags
+              %dd
+                - if @contact.tag_list.any?
+                  .flex.flex-wrap.gap-1
+                    - @contact.tag_list.each do |t|
+                      %span.badge.badge-ghost.badge-sm= t
+                - else
+                  = "—"
+          - if @contact.custom.present? && @contact.custom.any?
+            .divider.my-2
+            %h3.font-semibold.text-sm Custom fields
+            %dl.grid.grid-cols-2.gap-2.text-sm.mt-1
+              - @contact.custom.each do |k, v|
+                %div
+                  %dt.opacity-60= k
+                  %dd= v
+          .mt-2
+            = link_to "Edit fields & tags", edit_crm_contact_path(@contact), class: "btn btn-ghost btn-xs"
+
+      / Notes + activity feed
+      .card.bg-base-100.shadow-md.border.border-base-300
+        .card-body
+          %h2.card-title Notes &amp; activity
+          = form_with url: crm_contact_notes_path(@contact), method: :post, class: "flex flex-col gap-2 mt-2" do
+            %textarea.textarea.textarea-bordered{ name: "contact_note[body]", rows: 2, placeholder: "Add a note…", required: true }
+            %div
+              %button.btn.btn-primary.btn-sm{ type: "submit" } Add note
+          .divider.my-2
+          - if @notes.any?
+            %ul.flex.flex-col.gap-3
+              - @notes.each do |note|
+                %li.flex.gap-3
+                  .mt-1
+                    - if note.kind == "stage_change"
+                      %span.badge.badge-secondary.badge-xs ⇅
+                    - elsif note.kind == "email"
+                      %span.badge.badge-info.badge-xs ✉
+                    - else
+                      %span.badge.badge-ghost.badge-xs •
+                  .flex.flex-col
+                    %div.text-sm= note.body
+                    %div.text-xs.opacity-60
+                      = note.display_author
+                      = "· #{fmt_datetime(note.created_at)}"
+          - else
+            %p.text-sm.opacity-60 No notes yet.
+
+    .flex.flex-col.gap-6
+      / Pipeline panel
+      .card.bg-base-100.shadow-md.border.border-base-300
+        .card-body
+          %h2.card-title Pipeline
+          - if @contact.enrolled?
+            %div.text-sm
+              Stage:
+              %span.badge.badge-primary= @contact.pipeline_stage
+            - if @contact.pipeline_score.present?
+              %div.text-sm.mt-1
+                Score:
+                %span.font-semibold= @contact.pipeline_score
+            - if @contact.pipeline_rationale.present?
+              %p.text-xs.opacity-70.mt-1= @contact.pipeline_rationale
+            = form_with url: move_stage_crm_contact_path(@contact), method: :patch, class: "flex items-end gap-2 mt-3" do
+              %label.form-control.flex-1
+                .label
+                  %span.label-text Move to stage
+                %select.select.select-bordered.select-sm{ name: "stage" }
+                  - Contact::STAGES.each do |s|
+                    %option{ value: s, selected: @contact.pipeline_stage == s }= s
+              %button.btn.btn-secondary.btn-sm{ type: "submit" } Move
+            = link_to "Open pipeline board", crm_pipeline_path, class: "link link-hover text-xs mt-2 inline-block"
+          - else
+            %p.text-sm.opacity-70 Not in the pipeline.
+            %button.btn.btn-secondary.btn-sm.mt-2{ type: "button", onclick: "document.getElementById('enroll_modal').showModal()" } Enroll
+
+      / Connected events
+      .card.bg-base-100.shadow-md.border.border-base-300
+        .card-body
+          %h2.card-title Connected events
+          - if @connected_events.any?
+            %ul.flex.flex-col.gap-1.mt-1
+              - @connected_events.each do |es|
+                %li.text-sm
+                  %span.font-medium= es.event&.name
+                  %span.badge.badge-ghost.badge-xs.ml-1= es.status
+          - else
+            %p.text-sm.opacity-60 Not linked to any event yet.
+
+      / Duplicates / merge
+      .card.bg-base-100.shadow-md.border.border-base-300
+        .card-body
+          %h2.card-title Duplicates
+          - if @duplicates.any?
+            %p.text-xs.opacity-70 Same name, different record. Merge into this contact:
+            %ul.flex.flex-col.gap-2.mt-2
+              - @duplicates.each do |dup|
+                %li.flex.items-center.justify-between.gap-2.text-sm
+                  %div
+                    %div.font-medium= dup.name
+                    %div.text-xs.opacity-60= dup.email.presence || "no email"
+                  = button_to "Merge", merge_into_crm_contact_path(@contact), params: { duplicate_id: dup.id }, method: :post, class: "btn btn-warning btn-xs"
+          - else
+            %p.text-sm.opacity-60 No duplicates found.
+
+  / Enroll modal
+  %dialog#enroll_modal.modal
+    .modal-box
+      %h3.font-bold.text-lg Enroll in pipeline
+      = form_with url: enroll_crm_contact_path(@contact), method: :post do
+        .form-control.mt-3
+          .label
+            %span.label-text Starting stage
+          %select.select.select-bordered{ name: "stage" }
+            - Contact::STAGES.each do |s|
+              %option{ value: s }= s
+        .form-control.mt-2
+          .label
+            %span.label-text Score (optional)
+          %input.input.input-bordered{ type: "number", name: "pipeline_score", placeholder: "e.g. 85" }
+        .form-control.mt-2
+          .label
+            %span.label-text Rationale (optional)
+          %textarea.textarea.textarea-bordered{ name: "pipeline_rationale", rows: 2 }
+        .modal-action
+          %button.btn.btn-primary{ type: "submit" } Enroll
+          %button.btn.btn-ghost{ type: "button", onclick: "document.getElementById('enroll_modal').close()" } Cancel
+    %form.modal-backdrop{ method: "dialog" }
+      %button close
+
+  / Add to event modal
+  %dialog#add_event_modal.modal
+    .modal-box
+      %h3.font-bold.text-lg Add to an event
+      - if @organizing_events.any?
+        = form_with url: add_to_event_crm_contact_path(@contact), method: :post do
+          .form-control.mt-3
+            .label
+              %span.label-text Choose one of your events
+            %select.select.select-bordered{ name: "event_id" }
+              - @organizing_events.each do |ev|
+                %option{ value: ev.id }= ev.name
+          .modal-action
+            %button.btn.btn-primary{ type: "submit" } Add as speaker
+            %button.btn.btn-ghost{ type: "button", onclick: "document.getElementById('add_event_modal').close()" } Cancel
+      - else
+        %p.text-sm.opacity-70.mt-3 You don't organize any events yet.
+        .modal-action
+          %button.btn.btn-ghost{ type: "button", onclick: "document.getElementById('add_event_modal').close()" } Close
+    %form.modal-backdrop{ method: "dialog" }
+      %button close

@@ -1,0 +1,27 @@
+.max-w-3xl.flex.flex-col.gap-5
+  %h1.text-2xl.font-bold Event Settings
+  %p.opacity-60.text-sm Configure event details and preferences. Every value survives a reload.
+  = simple_form_for @event, url: event_manage_settings_path(@event), method: :patch, html: { multipart: true } do |f|
+    .card.bg-base-100.border.border-base-300
+      .card-body.grid.grid-cols-1.gap-4{ class: "md:grid-cols-2" }
+        = f.input :name, label: "Event name", wrapper_html: { class: "md:col-span-2" }
+        = f.input :tagline
+        = f.input :event_type, collection: ["Conference", "Summit", "Workshop", "Meetup", "Webinar"], include_blank: false
+        = f.input :location
+        = f.input :timezone, collection: ActiveSupport::TimeZone.all.map(&:name), include_blank: false
+        = f.input :website_url, label: "Event website URL"
+        = f.input :status, collection: Event.statuses.keys.map { |k| [k.humanize, k] }, include_blank: false
+        = f.input :starts_on, as: :string, input_html: { type: "date", value: @event.starts_on }
+        = f.input :ends_on, as: :string, input_html: { type: "date", value: @event.ends_on }
+        = f.input :cfp_opens_at, as: :string, input_html: { type: "datetime-local", value: @event.cfp_opens_at&.strftime("%Y-%m-%dT%H:%M") }, label: "CFP opens"
+        = f.input :cfp_closes_at, as: :string, input_html: { type: "datetime-local", value: @event.cfp_closes_at&.strftime("%Y-%m-%dT%H:%M") }, label: "CFP closes"
+        = f.input :theme, as: :text, input_html: { rows: 2 }, wrapper_html: { class: "md:col-span-2" }, hint: "Helps AI features and search."
+        = f.input :formats_text, as: :text, label: "Session formats (one per line)", input_html: { rows: 5, value: @event.formats.join("\n") }
+        .flex.flex-col.gap-2
+          = f.input :logo, as: :file, label: "Logo image (300×300)"
+          = f.input :background, as: :file, label: "Background image (1500×500)"
+          - if @event.logo.attached?
+            = image_tag @event.logo, class: "w-24 h-24 rounded object-cover mt-1"
+    .flex.gap-2
+      = f.button :submit, "Save settings", class: "btn btn-primary"
+      = link_to "Manage tracks & rooms", event_manage_tracks_path(@event), class: "btn btn-ghost"

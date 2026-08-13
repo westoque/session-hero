@@ -1,0 +1,10 @@
+.max-w-2xl.flex.flex-col.gap-4
+  %h1.text-2xl.font-bold Conflicts
+  = link_to "← Back to agenda", event_manage_agenda_path(@event), class: "link text-sm"
+  - if @conflicts.any?
+    - @conflicts.each do |c|
+      .alert.alert-warning
+        %span= c[:kind] == "room" ? "Room conflict: “#{c[:a].title}” & “#{c[:b].title}”" : "Speaker double-booked: “#{c[:a].title}” & “#{c[:b].title}”"
+  - else
+    .alert.alert-success
+      %span No conflicts. 🎉

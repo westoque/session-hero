@@ -1,0 +1,57 @@
+- content_for(:title, "My review queue · #{@event.name}")
+.w-full.max-w-4xl.mx-auto.flex.flex-col.gap-6
+  .flex.flex-col.gap-1
+    %h1.text-2xl.font-bold My review queue
+    %p.opacity-70 Sessions assigned to you for review. You only see your own assignments.
+
+  - if @rounds.empty?
+    .card.bg-base-200.border.border-dashed.border-base-300
+      .card-body.items-center.text-center
+        %p.opacity-70 You have no review assignments yet.
+
+  - @rounds.each do |round|
+    - subs = @submissions_by_round[round.id]
+    - reviews = @reviews_by_round[round.id]
+    - done = round.completed_count(current_user)
+    - total = round.assigned_count(current_user)
+    %section.card.bg-base-100.border.border-base-300.rounded-box
+      .card-body.gap-4
+        .flex.flex-wrap.items-start.justify-between.gap-3
+          .flex.flex-col.gap-1
+            .flex.items-center.gap-2
+              %h2.text-lg.font-semibold= round.name
+              - if round.anonymized
+                %span.badge.badge-neutral.badge-sm Blind review
+            - if round.instructions.present?
+              %p.text-sm.opacity-70.max-w-2xl= round.instructions
+          .text-right.shrink-0
+            %div.text-sm.font-medium= "#{done} of #{total} reviewed"
+            %progress.progress.progress-primary.w-32{ value: done, max: total }
+
+        - if subs.any?
+          .overflow-x-auto
+            %table.table.border.border-base-300.rounded-box
+              %thead
+                %tr
+                  %th Session
+                  %th Track
+                  %th Your review
+                  %th.text-right
+              %tbody
+                - subs.each do |s|
+                  - review = reviews[s.id]
+                  - reviewed = review&.completed?
+                  %tr
+                    %td
+                      .font-medium= s.title
+                      .text-xs.opacity-60= s.talk_format
+                    %td= track_chip(s.track)
+                    %td
+                      - if reviewed
+                        %span.badge.badge-success.badge-sm Reviewed ✓
+                      - else
+                        %span.badge.badge-ghost.badge-sm Not started
+                    %td.text-right
+                      = link_to (reviewed ? "Edit review" : "Review"), event_review_submission_path(@event, s, round: round.id), class: "btn btn-sm btn-primary"
+        - else
+          %p.opacity-70.text-sm No sessions assigned to you in this round.

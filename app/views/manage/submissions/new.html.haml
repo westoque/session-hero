@@ -1,0 +1,24 @@
+.max-w-2xl.flex.flex-col.gap-4
+  %h1.text-2xl.font-bold New session
+  %p.opacity-60.text-sm Manually add a session to the program.
+  = simple_form_for @submission, url: event_manage_submissions_path(@event) do |f|
+    = f.error_notification
+    = f.input :title, label: "Session title"
+    = f.input :abstract, as: :text, input_html: { rows: 5 }
+    .grid.grid-cols-1.gap-4{ class: "md:grid-cols-2" }
+      = f.input :talk_format, collection: @event.formats, include_blank: "Choose format…"
+      = f.association :track, collection: @event.tracks, include_blank: "Choose track…"
+      = f.input :audience_level, collection: ["Beginner", "Intermediate", "Advanced"], include_blank: "—"
+      = f.input :status, collection: Submission.statuses.keys.map { |k| [k.humanize, k] }, include_blank: false
+    .card.bg-base-200.border.border-base-300
+      .card-body.gap-3
+        %h2.font-semibold.text-sm Primary speaker
+        - if @event.event_speakers.any?
+          = select_tag :speaker_id, options_from_collection_for_select(@event.event_speakers, :id, :name), include_blank: "— existing speaker —", class: "select select-bordered w-full"
+        .divider.text-xs.my-0 or add new
+        .grid.grid-cols-1.gap-2{ class: "md:grid-cols-2" }
+          = text_field_tag :speaker_name, nil, placeholder: "New speaker name", class: "input input-bordered"
+          = text_field_tag :speaker_email, nil, placeholder: "speaker@email.com", class: "input input-bordered"
+    .flex.gap-2.mt-2
+      = f.button :submit, "Create session", class: "btn btn-primary"
+      = link_to "Cancel", event_manage_submissions_path(@event), class: "btn btn-ghost"

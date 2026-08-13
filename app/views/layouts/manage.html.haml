@@ -1,0 +1,47 @@
+!!!
+%html{ "data-theme": "facebook" }
+  %head
+    %meta{ "http-equiv": "Content-Type", content: "text/html; charset=UTF-8" }/
+    %title= title_tag
+    %meta{ name: "viewport", content: "width=device-width,initial-scale=1" }/
+    = csrf_meta_tags
+    = csp_meta_tag
+    = yield :head
+    %link{ href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap", rel: "stylesheet" }/
+    = stylesheet_link_tag :app, "data-turbo-track": "reload"
+    = javascript_importmap_tags
+  %body.bg-base-200.min-h-screen
+    - nav = ->(path, label, icon){ link_to raw("#{icon} #{label}"), path, class: "flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-base-200 #{'bg-primary text-primary-content hover:bg-primary' if current_page?(path)}" }
+    .drawer{ class: "lg:drawer-open" }
+      %input#manage-drawer.drawer-toggle{ type: "checkbox" }/
+      .drawer-content.flex.flex-col
+        %header.navbar.bg-base-100.border-b.border-base-300.sticky.top-0.z-30
+          .flex-none.lg:hidden
+            %label.btn.btn-square.btn-ghost{ for: "manage-drawer" } ☰
+          .flex-1.px-2.font-semibold.truncate= @event.name
+          .flex-none.flex.gap-2
+            = link_to "View public site", event_public_site_path(@event), class: "btn btn-ghost btn-sm", target: "_blank"
+            = link_to "Dashboard", dashboard_path, class: "btn btn-ghost btn-sm"
+            = button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-outline btn-sm"
+        %main.p-5.lg:p-8
+          = render "shared/flash"
+          = yield
+      .drawer-side.z-40
+        %label.drawer-overlay{ for: "manage-drawer" }
+        %aside.w-64.min-h-full.bg-base-100.border-r.border-base-300.flex.flex-col.gap-1.p-3
+          .px-3.py-2.mb-1
+            = link_to "Open Session", dashboard_path, class: "text-lg font-bold text-primary"
+            %div.text-xs.opacity-60 Organizer console
+          = nav.(event_manage_root_path(@event), "Dashboard", "▣")
+          = nav.(event_manage_submissions_path(@event), "Sessions", "▤")
+          = nav.(event_manage_submission_forms_path(@event), "Submission Forms", "▦")
+          = nav.(event_manage_review_rounds_path(@event), "Evaluation", "★")
+          = nav.(event_manage_speakers_path(@event), "Speakers", "☺")
+          = nav.(event_manage_portal_tasks_path(@event), "Tasks", "✓")
+          = nav.(event_manage_agenda_path(@event), "Agenda", "▥")
+          = nav.(event_manage_deliverables_path(@event), "Files & Content", "▢")
+          = nav.(event_manage_communications_path(@event), "Communications", "✉")
+          = nav.(event_manage_email_templates_path(@event), "Email Templates", "❏")
+          = nav.(event_manage_settings_path(@event), "Settings", "⚙")
+          .divider.my-1
+          = nav.(crm_root_path, "Speaker CRM", "◈")

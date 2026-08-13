@@ -1,0 +1,73 @@
+- content_for(:title, @session.title)
+.w-full.max-w-4xl.mx-auto.flex.flex-col.gap-6
+  = link_to "← Back to my sessions", portal_sessions_path, class: "link link-hover text-sm opacity-70"
+
+  / Session detail
+  .card.bg-base-100.shadow-md.border.border-base-300
+    .card-body.gap-3
+      .flex.items-start.justify-between.gap-3
+        %h1.text-2xl.font-bold= @session.title
+        = content_status_badge(@session.content_status)
+      .flex.flex-wrap.gap-3.items-center.text-sm
+        - if @session.track
+          = track_chip(@session.track)
+        - if @session.talk_format.present?
+          %span.badge.badge-ghost.badge-sm= @session.talk_format
+        - if @session.room
+          %span.opacity-70= "📍 #{@session.room.name}"
+        - if @session.starts_at
+          %span.opacity-70= "🕑 #{fmt_datetime(@session.starts_at)}#{@session.time_range ? " (#{@session.time_range})" : ''}"
+      - if @session.abstract.present?
+        .divider.my-0
+        %div
+          %h3.font-semibold.mb-1 Abstract
+          %p.text-sm.whitespace-pre-line= @session.abstract
+      - if @session.speakers.any?
+        %div
+          %h3.font-semibold.mb-1 Speakers
+          .flex.flex-wrap.gap-2
+            - @session.speakers.each do |sp|
+              .flex.items-center.gap-2.bg-base-200.rounded-full.pr-3
+                = speaker_avatar(sp, size: 8)
+                %span.text-sm= sp.name
+
+  / Files / deliverables section
+  #files.card.bg-base-100.shadow-md.border.border-base-300
+    .card-body.gap-4
+      %h2.card-title Files & Deliverables
+
+      / Constraints (CNT-06)
+      .alert.bg-base-200.text-sm
+        %span
+          %strong Upload requirements:
+          Accepted formats PDF, PPTX, PNG, JPG · Max 50 MB per file.
+
+      / Upload a new deliverable
+      .rounded-lg.border.border-dashed.border-base-300.p-4
+        %h3.font-semibold.mb-2 Upload a file
+        = form_with url: portal_session_deliverables_path(@session), method: :post, multipart: true, class: "flex flex-col gap-3" do |f|
+          .grid.grid-cols-1.gap-3{ class: "sm:grid-cols-3" }
+            .form-control
+              %label.label.py-1
+                %span.label-text Title
+              = text_field_tag "deliverable[title]", nil, placeholder: "e.g. Final slides", class: "input input-bordered input-sm w-full"
+            .form-control
+              %label.label.py-1
+                %span.label-text Kind
+              = select_tag "deliverable[kind]", options_for_select(Deliverable::KINDS.map { |k| [k.humanize, k] }), class: "select select-bordered select-sm w-full"
+            .form-control
+              %label.label.py-1
+                %span.label-text For task
+              - task_opts = @file_tasks.map { |a| [a.portal_task.title, a.portal_task.id] }
+              = select_tag "deliverable[portal_task_id]", options_for_select([["— none —", ""]] + task_opts), class: "select select-bordered select-sm w-full"
+          .flex.items-center.gap-2
+            = file_field_tag "file", class: "file-input file-input-bordered file-input-sm w-full max-w-xs"
+            = f.submit "Upload", class: "btn btn-primary btn-sm"
+
+      / Existing deliverables
+      - if @deliverables.any?
+        .flex.flex-col.gap-4
+          - @deliverables.each do |d|
+            = render "portal/deliverables/deliverable", deliverable: d
+      - else
+        %p.opacity-70.text-sm No files uploaded yet.
