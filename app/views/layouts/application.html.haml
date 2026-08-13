@@ -17,8 +17,9 @@
     %link{:href => "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap", :rel => "stylesheet"}/
     = stylesheet_link_tag :app, "data-turbo-track": "reload"
     = javascript_importmap_tags
-  -# pt-16 offsets the fixed navbar so body content (flash included) clears it.
-  %body.pt-16.min-h-screen.flex.flex-col
+  -# Navbar is sticky (in normal flow), so the demo banner can sit above it at
+  -# the very top; no fixed-navbar offset needed.
+  %body.min-h-screen.flex.flex-col
     = render "shared/demo_banner"
     = render 'shared/navbar'
     = render 'shared/flash'
