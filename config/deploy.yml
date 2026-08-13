@@ -32,6 +32,8 @@ env:
     SOLID_QUEUE_IN_PUMA: true
     # Google Analytics 4 measurement ID (rendered by shared/_analytics in production).
     GA_MEASUREMENT_ID: G-PZ2PVLRZK0
+    # Microsoft Clarity project ID (session replay + heatmaps, shared/_analytics).
+    CLARITY_PROJECT_ID: y1vwmif8rh
     # Set number of cores available to the application on each server (default: 1).
     # WEB_CONCURRENCY: 2
 
