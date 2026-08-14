@@ -9,8 +9,8 @@
     = yield :head
     = render "shared/favicons"
     = render "shared/analytics"
-    %link{ href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap", rel: "stylesheet" }/
-    = stylesheet_link_tag :app, "data-turbo-track": "reload"
+    %link{ href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap", rel: "stylesheet", "data-clarity-unmask": "true" }/
+    = stylesheet_link_tag :app, "data-turbo-track": "reload", "data-clarity-unmask": "true"
     = javascript_importmap_tags
   %body.bg-base-200.min-h-screen.flex.flex-col
     - nav_link = ->(path, label){ link_to label, path, class: "px-3 py-2 rounded-lg text-sm font-medium hover:bg-base-200 #{'bg-primary text-primary-content hover:bg-primary' if current_page?(path)}" }

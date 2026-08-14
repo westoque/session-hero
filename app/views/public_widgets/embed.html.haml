@@ -7,7 +7,7 @@
     = csrf_meta_tags
     = csp_meta_tag
     %link{ href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap", rel: "stylesheet" }/
-    = stylesheet_link_tag :app, "data-turbo-track": "reload"
+    = stylesheet_link_tag :app, "data-turbo-track": "reload", "data-clarity-unmask": "true"
     = javascript_importmap_tags
   %body.bg-base-100.p-4
     = render template: "public_widgets/#{@widget}"

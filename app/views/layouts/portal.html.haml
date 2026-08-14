@@ -9,8 +9,8 @@
     = yield :head
     = render "shared/favicons"
     = render "shared/analytics"
-    %link{ href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap", rel: "stylesheet" }/
-    = stylesheet_link_tag :app, "data-turbo-track": "reload"
+    %link{ href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap", rel: "stylesheet", "data-clarity-unmask": "true" }/
+    = stylesheet_link_tag :app, "data-turbo-track": "reload", "data-clarity-unmask": "true"
     = javascript_importmap_tags
   %body.bg-base-200.min-h-screen
     = render "shared/demo_banner"
